@@ -1,0 +1,11 @@
+langchain-neo4j
+langchain-community
+langchain-core
+langchain-text-splitters
+langchain-experimental
+langchain-openai
+gradio
+python-dotenv
+unstructured[pdf]
+poppler-utils
+gigachat

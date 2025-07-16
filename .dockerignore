@@ -1,0 +1,7 @@
+.venv/
+.git/
+.gitignore
+.env
+.gradio
+neo4j/
+docs
