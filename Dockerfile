@@ -1,34 +1,39 @@
-# Используем официальный образ с uv
-FROM ghcr.io/astral-sh/uv:python3.10-bookworm-slim AS builder
+# Use a Python image with uv pre-installed
+FROM ghcr.io/astral-sh/uv:python3.10-bookworm-slim
 
-ENV UV_COMPILE_BYTECODE=1
-ENV UV_LINK_MODE=copy
+# Install the project into `/app`
 WORKDIR /app
 
-# Устанавливаем только зависимости из lockfile
-COPY uv.lock pyproject.toml /app/
+# Enable bytecode compilation
+ENV UV_COMPILE_BYTECODE=1
+
+# Copy from the cache instead of linking since it's a mounted volume
+ENV UV_LINK_MODE=copy
+
+# opencv dependencies
+RUN apt-get update && apt-get install ffmpeg libsm6 libxext6  -y
+
+# Install the project's dependencies using the lockfile and settings
 RUN --mount=type=cache,target=/root/.cache/uv \
+    --mount=type=bind,source=uv.lock,target=uv.lock \
+    --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
     uv sync --locked --no-install-project
 
-# Добавляем код и устанавливаем весь проект (зависимости уже закешированы)
+# Then, add the rest of the project source code and install it
+# Installing separately from its dependencies allows optimal layer caching
 COPY . /app
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --locked
 
-# Runtime-образ — тот же базовый, без uv
-FROM python:3.10-slim-bookworm
-
-# Устанавливаем системные зависимости для opencv
-RUN apt-get update && apt-get install -y ffmpeg libsm6 libxext6 && \
-    rm -rf /var/lib/apt/lists/*
-
-# Копируем venv из builder
-COPY --from=builder /app/.venv /app/.venv
-WORKDIR /app
-
+# Place executables in the environment at the front of the path
 ENV PATH="/app/.venv/bin:$PATH"
-ENV GRADIO_SERVER_NAME="0.0.0.0"
 EXPOSE 7860
+ENV GRADIO_SERVER_NAME="0.0.0.0"
 
+# Reset the entrypoint, don't invoke `uv`
 ENTRYPOINT []
+
+# Run the FastAPI application by default
+# Uses `fastapi dev` to enable hot-reloading when the `watch` sync occurs
+# Uses `--host 0.0.0.0` to allow access from outside the container
 CMD ["uv", "run", "python3", "main.py"]
