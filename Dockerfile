@@ -25,15 +25,7 @@ COPY . /app
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --locked
 
-# Place executables in the environment at the front of the path
-ENV PATH="/app/.venv/bin:$PATH"
 EXPOSE 7860
 ENV GRADIO_SERVER_NAME="0.0.0.0"
 
-# Reset the entrypoint, don't invoke `uv`
-ENTRYPOINT []
-
-# Run the FastAPI application by default
-# Uses `fastapi dev` to enable hot-reloading when the `watch` sync occurs
-# Uses `--host 0.0.0.0` to allow access from outside the container
-CMD ["uv", "run", "python3", "main.py"]
+CMD ["uv", "run", "main.py"]
