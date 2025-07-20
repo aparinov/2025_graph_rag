@@ -34,6 +34,7 @@ services:
       - "7860:7860"
     networks:
       - gr_network
+    image: danonchik/hse_rag_2025:latest 
 
 networks:
   gr_network:
