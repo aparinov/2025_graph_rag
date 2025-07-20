@@ -40,7 +40,7 @@ def upload_pdfs(files, llm_provider):
     # Load & chunk text
     loader = UnstructuredPDFLoader(pdf_path)
     docs = loader.load()
-    splitter = CharacterTextSplitter(chunk_size=512, chunk_overlap=64)
+    splitter = CharacterTextSplitter(chunk_size=512, chunk_overlap=128)
     chunks = splitter.split_documents(docs)
 
     # 🧠 Use LLMGraphTransformer to extract entities & relations
