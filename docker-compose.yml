@@ -22,8 +22,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    volumes:
-      - .:/app
     depends_on:
       - neo4j
     env_file:
