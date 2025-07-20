@@ -1,49 +1,42 @@
-FROM cgr.dev/chainguard/python:latest-dev AS builder
+# Use a Python image with uv pre-installed
+FROM ghcr.io/astral-sh/uv:python3.12-bookworm-slim
 
-USER root
-
-# https://docs.astral.sh/uv/guides/integration/docker/#compiling-bytecode
-ENV UV_COMPILE_BYTECODE=1 
-# https://docs.astral.sh/uv/guides/integration/docker/#caching
-ENV UV_LINK_MODE=copy
-# https://docs.astral.sh/uv/concepts/cache/#cache-directory
-# Found this cache dir by running;
-# docker run -it --entrypoint /bin/bash --rm cgr.dev/chainguard/python:latest-dev
-# uv cache dir
-ENV UV_CACHE_DIR=/root/.cache/uv
-ENV GRADIO_SERVER_NAME="0.0.0.0"
-
+# Install the project into `/app`
 WORKDIR /app
 
-# Install dependencies
-# Mount the cache and lock files
+# Enable bytecode compilation
+ENV UV_COMPILE_BYTECODE=1
+
+# Copy from the cache instead of linking since it's a mounted volume
+ENV UV_LINK_MODE=copy
+
+ENV GRADIO_SERVER_NAME="0.0.0.0"
 
 RUN apt-get update \
   && apt-get install -y --no-install-recommends \
      ffmpeg libsm6 libxext6 \
   && rm -rf /var/lib/apt/lists/*
 
-RUN --mount=type=cache,target=${UV_CACHE_DIR} \
+# Install the project's dependencies using the lockfile and settings
+RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=bind,source=uv.lock,target=uv.lock \
     --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
-    uv sync --frozen --no-install-project --no-dev --no-editable
+    uv sync --locked --no-install-project --no-dev
 
-# Copy source code
-COPY . app/
+# Then, add the rest of the project source code and install it
+# Installing separately from its dependencies allows optimal layer caching
+COPY . /app
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv sync --locked --no-dev
 
-# Install the application
-RUN --mount=type=cache,target=${UV_CACHE_DIR} \
-    --mount=type=bind,source=uv.lock,target=uv.lock \
-    --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
-    uv sync --frozen --no-dev --no-editable
+# Place executables in the environment at the front of the path
+ENV PATH="/app/.venv/bin:$PATH"
 
-
-FROM cgr.dev/chainguard/python:latest AS runtime
-
-WORKDIR /app
-
-COPY --from=builder /app /app
-
+# Reset the entrypoint, don't invoke `uv`
+ENTRYPOINT []
 EXPOSE 7860
 
+# Run the FastAPI application by default
+# Uses `fastapi dev` to enable hot-reloading when the `watch` sync occurs
+# Uses `--host 0.0.0.0` to allow access from outside the container
 CMD ["uv", "run", "main.py"]
