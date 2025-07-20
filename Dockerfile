@@ -17,12 +17,14 @@ RUN apt-get update \
      ffmpeg libsm6 libxext6 \
   && rm -rf /var/lib/apt/lists/*
 
+COPY pyproject.toml uv.lock ./
+
 # Install the project's dependencies using the lockfile and settings
 RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=bind,source=uv.lock,target=uv.lock \
     --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
     uv sync --locked --no-install-project --no-dev
-    
+
 COPY . /app
 
 # Place executables in the environment at the front of the path
@@ -35,4 +37,4 @@ EXPOSE 7860
 # Run the FastAPI application by default
 # Uses `fastapi dev` to enable hot-reloading when the `watch` sync occurs
 # Uses `--host 0.0.0.0` to allow access from outside the container
-CMD ["uv", "run", "main.py"]
+CMD ["python3", "main.py"]
