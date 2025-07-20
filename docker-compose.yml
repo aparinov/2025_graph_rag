@@ -1,5 +1,6 @@
 services:
   neo4j:
+    container_name: neo4j
     image: neo4j:latest
     volumes:
       - ./neo4j/logs:/logs
@@ -19,6 +20,7 @@ services:
       - gr_network
 
   app:
+    container_name: gradio
     build:
       context: .
       dockerfile: Dockerfile
