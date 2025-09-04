@@ -8,3 +8,6 @@ python-dotenv
 unstructured[pdf]
 poppler-utils
 gigachat
+chromadb
+sentence-transformers
+razdel

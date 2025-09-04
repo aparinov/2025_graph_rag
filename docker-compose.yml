@@ -19,21 +19,21 @@ services:
     networks:
       - gr_network
 
-  app:
-    container_name: gradio
-    build:
-      context: .
-      dockerfile: Dockerfile
-    depends_on:
-      - neo4j
-    env_file:
-      - .env
-    environment:
-      - PYTHONUNBUFFERED=1
-    ports:
-      - "7860:7860"
-    networks:
-      - gr_network
+  # app:
+  #   container_name: gradio
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   depends_on:
+  #     - neo4j
+  #   env_file:
+  #     - .env
+  #   environment:
+  #     - PYTHONUNBUFFERED=1
+  #   ports:
+  #     - "7860:7860"
+  #   networks:
+  #     - gr_network
 
 networks:
   gr_network:
