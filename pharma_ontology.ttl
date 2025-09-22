@@ -1,0 +1,450 @@
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix med:  <http://example.org/pharma#> .
+
+med: a owl:Ontology ;
+    rdfs:label "Pharmaceutical Ontology"@en, "Фармацевтическая онтология"@ru ;
+    rdfs:comment "Ontology for modeling pharmaceutical information from patient leaflets."@en, 
+                 "Онтология для моделирования фармацевтической информации из инструкций для пациентов."@ru .
+
+med:DrugProduct a owl:Class ;
+    rdfs:label "Drug Product"@en, "Лекарственный препарат"@ru ;
+    rdfs:comment "A product intended for use in the diagnosis, cure, mitigation, treatment, or prevention of disease."@en, 
+                 "Продукт, предназначенный для использования в диагностике, лечении, смягчении, лечении или профилактике заболеваний."@ru .
+
+med:ActiveSubstance a owl:Class ;
+    rdfs:label "Active Substance"@en, "Действующее вещество"@ru ;
+    rdfs:comment "A substance in a pharmaceutical product that is biologically active."@en, 
+                 "Вещество в фармацевтическом продукте, которое является биологически активным."@ru .
+
+med:Excipient a owl:Class ;
+    rdfs:label "Excipient"@en, "Вспомогательное вещество"@ru ;
+    rdfs:comment "An inactive substance used as a carrier for the active ingredients of a medication."@en, 
+                 "Неактивное вещество, используемое в качестве носителя для активных ингредиентов лекарства."@ru .
+
+med:DosageForm a owl:Class ;
+    rdfs:label "Dosage Form"@en, "Лекарственная форма"@ru ;
+    rdfs:comment "The physical form in which a medication is produced and dispensed."@en, 
+                 "Физическая форма, в которой производится и отпускается лекарство."@ru .
+
+med:RouteOfAdministration a owl:Class ;
+    rdfs:label "Route of Administration"@en, "Путь введения"@ru ;
+    rdfs:comment "The path by which a drug is taken into the body."@en, 
+                 "Путь, по которому лекарство попадает в организм."@ru .
+
+med:Strength a owl:Class ;
+    rdfs:label "Strength"@en, "Концентрация"@ru ;
+    rdfs:comment "The amount of active substance in a pharmaceutical product."@en, 
+                 "Количество действующего вещества в фармацевтическом продукте."@ru .
+
+med:DoseInstruction a owl:Class ;
+    rdfs:label "Dose Instruction"@en, "Инструкция по дозировке"@ru ;
+    rdfs:comment "Instructions on how a medication should be taken."@en, 
+                 "Инструкции по приему лекарства."@ru .
+
+med:Frequency a owl:Class ;
+    rdfs:label "Frequency"@en, "Частота"@ru ;
+    rdfs:comment "How often a dose of medication should be taken."@en, 
+                 "Как часто следует принимать дозу лекарства."@ru .
+
+med:Duration a owl:Class ;
+    rdfs:label "Duration"@en, "Продолжительность"@ru ;
+    rdfs:comment "The length of time a medication should be taken."@en, 
+                 "Продолжительность времени, в течение которого следует принимать лекарство."@ru .
+
+med:Indication a owl:Class ;
+    rdfs:label "Indication"@en, "Показание"@ru ;
+    rdfs:comment "A medical condition for which a drug is used."@en, 
+                 "Медицинское состояние, для которого используется лекарство."@ru .
+
+med:Contraindication a owl:Class ;
+    rdfs:label "Contraindication"@en, "Противопоказание"@ru ;
+    rdfs:comment "A condition or factor that serves as a reason to withhold a certain medical treatment."@en, 
+                 "Состояние или фактор, который служит причиной для отказа от определенного медицинского лечения."@ru .
+
+med:Warning a owl:Class ;
+    rdfs:label "Warning"@en, "Предупреждение"@ru ;
+    rdfs:comment "Information about potential risks associated with a drug."@en, 
+                 "Информация о потенциальных рисках, связанных с лекарством."@ru .
+
+med:Precaution a owl:Class ;
+    rdfs:label "Precaution"@en, "Мера предосторожности"@ru ;
+    rdfs:comment "A measure taken in advance to prevent harm or secure good results."@en, 
+                 "Мера, принимаемая заранее для предотвращения вреда или обеспечения хороших результатов."@ru .
+
+med:Interaction a owl:Class ;
+    rdfs:label "Interaction"@en, "Взаимодействие"@ru ;
+    rdfs:comment "A situation in which a substance affects the activity of a drug when both are administered together."@en, 
+                 "Ситуация, в которой вещество влияет на активность лекарства, когда оба вводятся вместе."@ru .
+
+med:AdverseReaction a owl:Class ;
+    rdfs:label "Adverse Reaction"@en, "Побочная реакция"@ru ;
+    rdfs:comment "An unwanted or harmful reaction experienced following the administration of a drug."@en, 
+                 "Нежелательная или вредная реакция, возникающая после приема лекарства."@ru .
+
+med:PatientGroup a owl:Class ;
+    rdfs:label "Patient Group"@en, "Группа пациентов"@ru ;
+    rdfs:comment "A group of patients with shared characteristics relevant to treatment."@en, 
+                 "Группа пациентов с общими характеристиками, имеющими отношение к лечению."@ru .
+
+med:AgeRange a owl:Class ;
+    rdfs:label "Age Range"@en, "Возрастной диапазон"@ru ;
+    rdfs:comment "The range of ages for which a drug is intended or contraindicated."@en, 
+                 "Диапазон возрастов, для которых предназначено или противопоказано лекарство."@ru .
+
+med:WeightRange a owl:Class ;
+    rdfs:label "Weight Range"@en, "Диапазон веса"@ru ;
+    rdfs:comment "The range of weights for which a drug is intended or contraindicated."@en, 
+                 "Диапазон веса, для которого предназначено или противопоказано лекарство."@ru .
+
+med:Pharmacodynamics a owl:Class ;
+    rdfs:label "Pharmacodynamics"@en, "Фармакодинамика"@ru ;
+    rdfs:comment "The study of the biochemical and physiological effects of drugs on the body."@en, 
+                 "Изучение биохимических и физиологических эффектов лекарств на организм."@ru .
+
+med:Pharmacokinetics a owl:Class ;
+    rdfs:label "Pharmacokinetics"@en, "Фармакокинетика"@ru ;
+    rdfs:comment "The study of how a drug is absorbed, distributed, metabolized, and excreted in the body."@en, 
+                 "Изучение того, как лекарство всасывается, распределяется, метаболизируется и выводится из организма."@ru .
+
+med:StorageCondition a owl:Class ;
+    rdfs:label "Storage Condition"@en, "Условия хранения"@ru ;
+    rdfs:comment "The conditions under which a drug should be stored to maintain its efficacy and safety."@en, 
+                 "Условия, при которых лекарство должно храниться для поддержания его эффективности и безопасности."@ru .
+
+med:ShelfLife a owl:Class ;
+    rdfs:label "Shelf Life"@en, "Срок годности"@ru ;
+    rdfs:comment "The length of time a drug is expected to remain effective and safe for use."@en, 
+                 "Продолжительность времени, в течение которого лекарство ожидается оставаться эффективным и безопасным для использования."@ru .
+
+med:Manufacturer a owl:Class ;
+    rdfs:label "Manufacturer"@en, "Производитель"@ru ;
+    rdfs:comment "An entity that produces a pharmaceutical product."@en, 
+                 "Субъект, производящий фармацевтический продукт."@ru .
+
+med:MarketingAuthorization a owl:Class ;
+    rdfs:label "Marketing Authorization"@en, "Маркетинговое разрешение"@ru ;
+    rdfs:comment "Authorization granted to market a pharmaceutical product."@en, 
+                 "Разрешение, выданное на маркетинг фармацевтического продукта."@ru .
+
+med:Ibuprofen a owl:Class ;
+    rdfs:label "Ibuprofen"@en, "Ибупрофен"@ru ;
+    rdfs:comment "A nonsteroidal anti-inflammatory drug (NSAID) used for pain relief, fever reduction, and inflammation reduction."@en, 
+                 "Нестероидный противовоспалительный препарат (НПВП), используемый для облегчения боли, снижения температуры и уменьшения воспаления."@ru ;
+    rdfs:subClassOf med:ActiveSubstance ;
+    skos:altLabel "Ibuprofenum"@en, "Ибупрофенум"@ru .
+
+med:Suspension a owl:Class ;
+    rdfs:label "Suspension"@en, "Суспензия"@ru ;
+    rdfs:comment "A liquid dosage form in which particles are dispersed throughout a liquid phase."@en, 
+                 "Жидкая лекарственная форма, в которой частицы распределены по всей жидкой фазе."@ru ;
+    rdfs:subClassOf med:DosageForm .
+
+med:hasName a owl:DatatypeProperty ;
+    rdfs:domain rdfs:Resource ;
+    rdfs:range xsd:string ;
+    rdfs:label "has name"@en, "имеет название"@ru ;
+    rdfs:comment "The name of the resource."@en, "Название ресурса."@ru .
+
+med:hasBrandName a owl:DatatypeProperty ;
+    rdfs:domain med:DrugProduct ;
+    rdfs:range xsd:string ;
+    rdfs:label "has brand name"@en, "имеет торговое название"@ru ;
+    rdfs:comment "The brand name of the drug product."@en, "Торговое название лекарственного препарата."@ru .
+
+med:hasINN a owl:DatatypeProperty ;
+    rdfs:domain med:ActiveSubstance ;
+    rdfs:range xsd:string ;
+    rdfs:label "has INN"@en, "имеет МНН"@ru ;
+    rdfs:comment "The International Nonproprietary Name (INN) of the active substance."@en, 
+                 "Международное непатентованное наименование (МНН) действующего вещества."@ru .
+
+med:hasATCCode a owl:DatatypeProperty ;
+    rdfs:domain med:DrugProduct ;
+    rdfs:range xsd:string ;
+    rdfs:label "has ATC code"@en, "имеет код ATC"@ru ;
+    rdfs:comment "The Anatomical Therapeutic Chemical (ATC) classification code of the drug product."@en, 
+                 "Код анатомо-терапевтической химической классификации (ATC) лекарственного препарата."@ru .
+
+med:hasStrengthValue a owl:DatatypeProperty ;
+    rdfs:domain med:Strength ;
+    rdfs:range xsd:decimal ;
+    rdfs:label "has strength value"@en, "имеет значение концентрации"@ru ;
+    rdfs:comment "The numeric value of the strength of the drug."@en, 
+                 "Числовое значение концентрации лекарства."@ru .
+
+med:hasStrengthUnit a owl:DatatypeProperty ;
+    rdfs:domain med:Strength ;
+    rdfs:range xsd:string ;
+    rdfs:label "has strength unit"@en, "имеет единицу концентрации"@ru ;
+    rdfs:comment "The unit of measurement for the strength of the drug."@en, 
+                 "Единица измерения концентрации лекарства."@ru .
+
+med:hasDoseAmount a owl:DatatypeProperty ;
+    rdfs:domain med:DoseInstruction ;
+    rdfs:range xsd:decimal ;
+    rdfs:label "has dose amount"@en, "имеет количество дозы"@ru ;
+    rdfs:comment "The amount of a single dose of the drug."@en, 
+                 "Количество одной дозы лекарства."@ru .
+
+med:hasDoseUnit a owl:DatatypeProperty ;
+    rdfs:domain med:DoseInstruction ;
+    rdfs:range xsd:string ;
+    rdfs:label "has dose unit"@en, "имеет единицу дозы"@ru ;
+    rdfs:comment "The unit of measurement for the dose of the drug."@en, 
+                 "Единица измерения дозы лекарства."@ru .
+
+med:hasFrequencyPerDay a owl:DatatypeProperty ;
+    rdfs:domain med:Frequency ;
+    rdfs:range xsd:decimal ;
+    rdfs:label "has frequency per day"@en, "имеет частоту в день"@ru ;
+    rdfs:comment "The number of times a dose should be taken per day."@en, 
+                 "Количество раз, которое доза должна быть принята в день."@ru .
+
+med:hasDurationDays a owl:DatatypeProperty ;
+    rdfs:domain med:Duration ;
+    rdfs:range xsd:decimal ;
+    rdfs:label "has duration days"@en, "имеет продолжительность в днях"@ru ;
+    rdfs:comment "The number of days a medication should be taken."@en, 
+                 "Количество дней, в течение которых следует принимать лекарство."@ru .
+
+med:hasMaxDailyDose a owl:DatatypeProperty ;
+    rdfs:domain med:DoseInstruction ;
+    rdfs:range xsd:decimal ;
+    rdfs:label "has max daily dose"@en, "имеет максимальную суточную дозу"@ru ;
+    rdfs:comment "The maximum amount of the drug that can be taken in one day."@en, 
+                 "Максимальное количество лекарства, которое можно принять за один день."@ru .
+
+med:hasMaxDailyDoseUnit a owl:DatatypeProperty ;
+    rdfs:domain med:DoseInstruction ;
+    rdfs:range xsd:string ;
+    rdfs:label "has max daily dose unit"@en, "имеет единицу максимальной суточной дозы"@ru ;
+    rdfs:comment "The unit of measurement for the maximum daily dose of the drug."@en, 
+                 "Единица измерения максимальной суточной дозы лекарства."@ru .
+
+med:hasAgeMinMonths a owl:DatatypeProperty ;
+    rdfs:domain med:AgeRange ;
+    rdfs:range xsd:integer ;
+    rdfs:label "has age min months"@en, "имеет минимальный возраст в месяцах"@ru ;
+    rdfs:comment "The minimum age in months for which the drug is intended or contraindicated."@en, 
+                 "Минимальный возраст в месяцах, для которого предназначено или противопоказано лекарство."@ru .
+
+med:hasAgeMaxYears a owl:DatatypeProperty ;
+    rdfs:domain med:AgeRange ;
+    rdfs:range xsd:integer ;
+    rdfs:label "has age max years"@en, "имеет максимальный возраст в годах"@ru ;
+    rdfs:comment "The maximum age in years for which the drug is intended or contraindicated."@en, 
+                 "Максимальный возраст в годах, для которого предназначено или противопоказано лекарство."@ru .
+
+med:hasWeightMinKg a owl:DatatypeProperty ;
+    rdfs:domain med:WeightRange ;
+    rdfs:range xsd:decimal ;
+    rdfs:label "has weight min kg"@en, "имеет минимальный вес в кг"@ru ;
+    rdfs:comment "The minimum weight in kilograms for which the drug is intended or contraindicated."@en, 
+                 "Минимальный вес в килограммах, для которого предназначено или противопоказано лекарство."@ru .
+
+med:hasWeightMaxKg a owl:DatatypeProperty ;
+    rdfs:domain med:WeightRange ;
+    rdfs:range xsd:decimal ;
+    rdfs:label "has weight max kg"@en, "имеет максимальный вес в кг"@ru ;
+    rdfs:comment "The maximum weight in kilograms for which the drug is intended or contraindicated."@en, 
+                 "Максимальный вес в килограммах, для которого предназначено или противопоказано лекарство."@ru .
+
+med:hasStatementText a owl:DatatypeProperty ;
+    rdfs:domain rdfs:Resource ;
+    rdfs:range xsd:string ;
+    rdfs:label "has statement text"@en, "имеет текст заявления"@ru ;
+    rdfs:comment "The verbatim text of a statement from the leaflet."@en, 
+                 "Дословный текст заявления из инструкции."@ru .
+
+med:isPrescriptionOnly a owl:DatatypeProperty ;
+    rdfs:domain med:DrugProduct ;
+    rdfs:range xsd:boolean ;
+    rdfs:label "is prescription only"@en, "только по рецепту"@ru ;
+    rdfs:comment "Indicates whether the drug product is available only by prescription."@en, 
+                 "Указывает, доступен ли лекарственный препарат только по рецепту."@ru .
+
+med:hasStorageTemperatureC a owl:DatatypeProperty ;
+    rdfs:domain med:StorageCondition ;
+    rdfs:range xsd:decimal ;
+    rdfs:label "has storage temperature °C"@en, "имеет температуру хранения °C"@ru ;
+    rdfs:comment "The temperature in degrees Celsius at which the drug should be stored."@en, 
+                 "Температура в градусах Цельсия, при которой лекарство должно храниться."@ru .
+
+med:containsActiveSubstance a owl:ObjectProperty ;
+    rdfs:domain med:DrugProduct ;
+    rdfs:range med:ActiveSubstance ;
+    rdfs:label "contains active substance"@en, "содержит действующее вещество"@ru ;
+    rdfs:comment "Indicates that a drug product contains a specific active substance."@en, 
+                 "Указывает, что лекарственный препарат содержит определенное действующее вещество."@ru .
+
+med:hasExcipient a owl:ObjectProperty ;
+    rdfs:domain med:DrugProduct ;
+    rdfs:range med:Excipient ;
+    rdfs:label "has excipient"@en, "имеет вспомогательное вещество"@ru ;
+    rdfs:comment "Indicates that a drug product contains a specific excipient."@en, 
+                 "Указывает, что лекарственный препарат содержит определенное вспомогательное вещество."@ru .
+
+med:hasDosageForm a owl:ObjectProperty ;
+    rdfs:domain med:DrugProduct ;
+    rdfs:range med:DosageForm ;
+    rdfs:label "has dosage form"@en, "имеет лекарственную форму"@ru ;
+    rdfs:comment "Indicates the dosage form of a drug product."@en, 
+                 "Указывает лекарственную форму лекарственного препарата."@ru .
+
+med:hasRoute a owl:ObjectProperty ;
+    rdfs:domain med:DrugProduct ;
+    rdfs:range med:RouteOfAdministration ;
+    rdfs:label "has route"@en, "имеет путь введения"@ru ;
+    rdfs:comment "Indicates the route of administration for a drug product."@en, 
+                 "Указывает путь введения для лекарственного препарата."@ru .
+
+med:hasStrength a owl:ObjectProperty ;
+    rdfs:domain med:DrugProduct ;
+    rdfs:range med:Strength ;
+    rdfs:label "has strength"@en, "имеет концентрацию"@ru ;
+    rdfs:comment "Indicates the strength of a drug product."@en, 
+                 "Указывает концентрацию лекарственного препарата."@ru .
+
+med:hasDoseInstruction a owl:ObjectProperty ;
+    rdfs:domain med:DrugProduct ;
+    rdfs:range med:DoseInstruction ;
+    rdfs:label "has dose instruction"@en, "имеет инструкцию по дозировке"@ru ;
+    rdfs:comment "Indicates the dose instructions for a drug product."@en, 
+                 "Указывает инструкции по дозировке для лекарственного препарата."@ru .
+
+med:hasFrequency a owl:ObjectProperty ;
+    rdfs:domain med:DoseInstruction ;
+    rdfs:range med:Frequency ;
+    rdfs:label "has frequency"@en, "имеет частоту"@ru ;
+    rdfs:comment "Indicates the frequency of dosing for a drug product."@en, 
+                 "Указывает частоту дозирования для лекарственного препарата."@ru .
+
+med:hasDuration a owl:ObjectProperty ;
+    rdfs:domain med:DoseInstruction ;
+    rdfs:range med:Duration ;
+    rdfs:label "has duration"@en, "имеет продолжительность"@ru ;
+    rdfs:comment "Indicates the duration of treatment with a drug product."@en, 
+                 "Указывает продолжительность лечения лекарственным препаратом."@ru .
+
+med:forPatientGroup a owl:ObjectProperty ;
+    rdfs:domain rdfs:Resource ;
+    rdfs:range med:PatientGroup ;
+    rdfs:label "for patient group"@en, "для группы пациентов"@ru ;
+    rdfs:comment "Indicates the patient group for which a drug product is intended or contraindicated."@en, 
+                 "Указывает группу пациентов, для которой предназначен или противопоказан лекарственный препарат."@ru .
+
+med:hasAgeRange a owl:ObjectProperty ;
+    rdfs:domain med:PatientGroup ;
+    rdfs:range med:AgeRange ;
+    rdfs:label "has age range"@en, "имеет возрастной диапазон"@ru ;
+    rdfs:comment "Indicates the age range for a patient group."@en, 
+                 "Указывает возрастной диапазон для группы пациентов."@ru .
+
+med:hasWeightRange a owl:ObjectProperty ;
+    rdfs:domain med:PatientGroup ;
+    rdfs:range med:WeightRange ;
+    rdfs:label "has weight range"@en, "имеет диапазон веса"@ru ;
+    rdfs:comment "Indicates the weight range for a patient group."@en, 
+                 "Указывает диапазон веса для группы пациентов."@ru .
+
+med:indicatedFor a owl:ObjectProperty ;
+    rdfs:domain med:DrugProduct ;
+    rdfs:range med:Indication ;
+    rdfs:label "indicated for"@en, "показан для"@ru ;
+    rdfs:comment "Indicates the medical conditions for which a drug product is indicated."@en, 
+                 "Указывает медицинские состояния, для которых показан лекарственный препарат."@ru .
+
+med:contraindicatedIn a owl:ObjectProperty ;
+    rdfs:domain med:DrugProduct ;
+    rdfs:range med:Contraindication ;
+    rdfs:label "contraindicated in"@en, "противопоказан при"@ru ;
+    rdfs:comment "Indicates the conditions or factors for which a drug product is contraindicated."@en, 
+                 "Указывает условия или факторы, для которых противопоказан лекарственный препарат."@ru .
+
+med:warnsAbout a owl:ObjectProperty ;
+    rdfs:domain med:DrugProduct ;
+    rdfs:range med:Warning ;
+    rdfs:label "warns about"@en, "предупреждает о"@ru ;
+    rdfs:comment "Indicates warnings associated with a drug product."@en, 
+                 "Указывает предупреждения, связанные с лекарственным препаратом."@ru .
+
+med:hasPrecaution a owl:ObjectProperty ;
+    rdfs:domain med:DrugProduct ;
+    rdfs:range med:Precaution ;
+    rdfs:label "has precaution"@en, "имеет меру предосторожности"@ru ;
+    rdfs:comment "Indicates precautions associated with a drug product."@en, 
+                 "Указывает меры предосторожности, связанные с лекарственным препаратом."@ru .
+
+med:interactsWithDrug a owl:ObjectProperty ;
+    rdfs:domain med:DrugProduct ;
+    rdfs:range med:DrugProduct ;
+    rdfs:label "interacts with drug"@en, "взаимодействует с препаратом"@ru ;
+    rdfs:comment "Indicates that a drug product interacts with another drug product."@en, 
+                 "Указывает, что лекарственный препарат взаимодействует с другим лекарственным препаратом."@ru .
+
+med:interactsWithSubstance a owl:ObjectProperty ;
+    rdfs:domain med:DrugProduct ;
+    rdfs:range med:ActiveSubstance ;
+    rdfs:label "interacts with substance"@en, "взаимодействует с веществом"@ru ;
+    rdfs:comment "Indicates that a drug product interacts with a specific active substance."@en, 
+                 "Указывает, что лекарственный препарат взаимодействует с определенным действующим веществом."@ru .
+
+med:mayCauseAdverseReaction a owl:ObjectProperty ;
+    rdfs:domain med:DrugProduct ;
+    rdfs:range med:AdverseReaction ;
+    rdfs:label "may cause adverse reaction"@en, "может вызвать побочную реакцию"@ru ;
+    rdfs:comment "Indicates that a drug product may cause a specific adverse reaction."@en, 
+                 "Указывает, что лекарственный препарат может вызвать определенную побочную реакцию."@ru .
+
+med:hasPharmacodynamics a owl:ObjectProperty ;
+    rdfs:domain med:DrugProduct ;
+    rdfs:range med:Pharmacodynamics ;
+    rdfs:label "has pharmacodynamics"@en, "имеет фармакодинамику"@ru ;
+    rdfs:comment "Indicates the pharmacodynamics of a drug product."@en, 
+                 "Указывает фармакодинамику лекарственного препарата."@ru .
+
+med:hasPharmacokinetics a owl:ObjectProperty ;
+    rdfs:domain med:DrugProduct ;
+    rdfs:range med:Pharmacokinetics ;
+    rdfs:label "has pharmacokinetics"@en, "имеет фармакокинетику"@ru ;
+    rdfs:comment "Indicates the pharmacokinetics of a drug product."@en, 
+                 "Указывает фармакокинетику лекарственного препарата."@ru .
+
+med:hasStorageCondition a owl:ObjectProperty ;
+    rdfs:domain med:DrugProduct ;
+    rdfs:range med:StorageCondition ;
+    rdfs:label "has storage condition"@en, "имеет условия хранения"@ru ;
+    rdfs:comment "Indicates the storage conditions for a drug product."@en, 
+                 "Указывает условия хранения для лекарственного препарата."@ru .
+
+med:hasShelfLife a owl:ObjectProperty ;
+    rdfs:domain med:DrugProduct ;
+    rdfs:range med:ShelfLife ;
+    rdfs:label "has shelf life"@en, "имеет срок годности"@ru ;
+    rdfs:comment "Indicates the shelf life of a drug product."@en, 
+                 "Указывает срок годности лекарственного препарата."@ru .
+
+med:hasManufacturer a owl:ObjectProperty ;
+    rdfs:domain med:DrugProduct ;
+    rdfs:range med:Manufacturer ;
+    rdfs:label "has manufacturer"@en, "имеет производителя"@ru ;
+    rdfs:comment "Indicates the manufacturer of a drug product."@en, 
+                 "Указывает производителя лекарственного препарата."@ru .
+
+med:hasMarketingAuthorization a owl:ObjectProperty ;
+    rdfs:domain med:DrugProduct ;
+    rdfs:range med:MarketingAuthorization ;
+    rdfs:label "has marketing authorization"@en, "имеет маркетинговое разрешение"@ru ;
+    rdfs:comment "Indicates the marketing authorization for a drug product."@en, 
+                 "Указывает маркетинговое разрешение для лекарственного препарата."@ru .
+
+med:hasUseGuidance a owl:ObjectProperty ;
+    rdfs:domain med:DrugProduct ;
+    rdfs:range med:PediatricUse ;
+    rdfs:label "has use guidance"@en, "имеет руководство по использованию"@ru ;
+    rdfs:comment "Indicates specific use guidance for a drug product."@en, 
+                 "Указывает конкретные рекомендации по использованию лекарственного препарата."@ru .

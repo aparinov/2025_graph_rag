@@ -11,3 +11,8 @@ gigachat
 chromadb
 sentence-transformers
 razdel
+neo4j-graphrag==1.6.0
+pydantic==2.11.9 
+rdflib>=7.0.0
+neo4j>=5.20
+loguru
