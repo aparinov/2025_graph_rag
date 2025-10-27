@@ -2,6 +2,7 @@ import os
 import asyncio
 import json
 
+import httpx
 import gradio as gr
 from dotenv import load_dotenv
 from langchain_community.llms.gigachat import GigaChat
@@ -26,6 +27,10 @@ except ImportError:
 
 load_dotenv(override=True)
 
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
+# Corporate HTTP proxy for OpenAI calls (e.g., http://user:pass@proxy:3128)
+PROXY_URL = os.getenv("PROXY_URL") or os.getenv("HTTPS_PROXY") or os.getenv("HTTP_PROXY")
+
 HOST = os.getenv("NEO4J_HOST", "localhost")
 PORT = os.getenv("NEO4J_PORT", "7687")
 print(f"neo4j://{HOST}:{PORT}")
@@ -42,6 +47,27 @@ graph = Neo4jGraph(
 
 # === Global document name storage ===
 current_document_name = None
+
+
+# ---------- OpenAI (summary + Q&A) ----------
+_openai_client = None
+
+def get_openai_client():
+    global _openai_client
+    if _openai_client is None:
+        if not OPENAI_API_KEY:
+            raise RuntimeError("OPENAI_API_KEY is not set")
+        from openai import OpenAI  # pip install openai>=1.40
+        # Build custom httpx client with corporate proxy if provided
+        verify = os.getenv("SSL_CERT_FILE") or True  # set SSL_CERT_FILE to corporate CA bundle if TLS is intercepted
+        transport = httpx.HTTPTransport(retries=3)
+        if PROXY_URL:
+            http_client = httpx.Client(proxies=PROXY_URL, timeout=60, verify=verify, transport=transport)
+        else:
+            http_client = httpx.Client(timeout=60, verify=verify, transport=transport)
+        _openai_client = OpenAI(api_key=OPENAI_API_KEY, http_client=http_client)
+    return _openai_client
+
 
 # ... (all your other imports remain the same)
 
@@ -210,15 +236,37 @@ def create_llm_client(provider: str, for_cypher: bool = False):
     Creates an LLM client. If for_cypher is True, it will prioritize
     the most powerful model available (OpenAI).
     """
-    if for_cypher and os.getenv("OPENAI_API_KEY"):
+    if for_cypher and OPENAI_API_KEY:
         # Always use the best model for Cypher generation if available
+        # Build custom httpx client with corporate proxy if provided
+        verify = os.getenv("SSL_CERT_FILE") or True
+        transport = httpx.HTTPTransport(retries=3)
+        if PROXY_URL:
+            http_client = httpx.Client(proxies=PROXY_URL, timeout=60, verify=verify, transport=transport)
+        else:
+            http_client = httpx.Client(timeout=60, verify=verify, transport=transport)
+        
         return ChatOpenAI(
-            model_name="gpt-4o", temperature=0, api_key=os.getenv("OPENAI_API_KEY")
+            model_name="gpt-4o", 
+            temperature=0, 
+            api_key=OPENAI_API_KEY,
+            http_client=http_client
         )
 
     if provider == "OpenAI":
+        # Build custom httpx client with corporate proxy if provided
+        verify = os.getenv("SSL_CERT_FILE") or True
+        transport = httpx.HTTPTransport(retries=3)
+        if PROXY_URL:
+            http_client = httpx.Client(proxies=PROXY_URL, timeout=60, verify=verify, transport=transport)
+        else:
+            http_client = httpx.Client(timeout=60, verify=verify, transport=transport)
+        
         return ChatOpenAI(
-            model_name="gpt-4o", temperature=0, api_key=os.getenv("OPENAI_API_KEY")
+            model_name="gpt-4o", 
+            temperature=0, 
+            api_key=OPENAI_API_KEY,
+            http_client=http_client
         )
     elif provider == "GigaChat":
         return GigaChat(
