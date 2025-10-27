@@ -31,7 +31,7 @@ services:
     environment:
       - PYTHONUNBUFFERED=1
     ports:
-      - "7860:1178"
+      - "7860:7860"
     networks:
       - gr_network
 
