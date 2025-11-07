@@ -17,7 +17,7 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 
 # Import our improved pipeline
-from improved_pipeline import ImprovedPipeline
+from pipelines.improved_pipeline import ImprovedPipeline
 
 load_dotenv(override=True)
 
