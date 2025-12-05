@@ -39,3 +39,4 @@ OPENAI_API_KEY = "ключ ChatGPT"
 ```
 python3 main.py
 ```
+test
