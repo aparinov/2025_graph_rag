@@ -1,0 +1,142 @@
+❯ python llms4ol_experiment.py --task all
+======================================================================
+LLMs4OL: Large Language Models for Ontology Learning
+Medical Domain Experiment (Acute Myeloid Leukemia)
+======================================================================
+Using default data file: 2025_graph_rag/EXPERIMENTS/data/acute_myeloid_leukemia_2025.md
+Loading additional data from: 2025_graph_rag/EXPERIMENTS/data/acute_myeloid_leukemia_2025.md
+
+Prepared samples:
+  - Term Typing: 20
+  - Taxonomy Discovery: 20
+  - Relation Extraction: 13
+
+Loading model: google/flan-t5-small
+tokenizer_config.json: 2.54kB [00:00, 1.32MB/s]
+spiece.model: 100%|█████████████████████████████████████████████| 792k/792k [00:03<00:00, 201kB/s]
+tokenizer.json: 2.42MB [00:01, 1.66MB/s]
+special_tokens_map.json: 2.20kB [00:00, 4.77MB/s]
+config.json: 1.40kB [00:00, 5.63MB/s]
+model.safetensors:  56%|██████████████████████                 | 174M/308M [01:18<01:03, 2.1model.safetensors:  78%|██████████████████████████████▌        | 241M/308M [01:20<00:18, 3.5model.safetensors:  78%|██████████████████████████████▌        | 241M/308M [01:35<00:18, 3.5model.safetensors: 100%|███████████████████████████████████████| 308M/308M [01:39<00:00, 3.5model.safetensors: 100%|███████████████████████████████████████| 308M/308M [01:39<00:00, 3.10MB/s]
+generation_config.json: 100%|██████████████████████████████| 147/147 [00:00<00:00, 1.36MB/s]
+Device set to use mps:0
+Model loaded successfully!
+
+============================================================
+TASK: Term Typing (Medical Domain)
+============================================================
+
+============================================================
+Evaluating Term Typing (20 samples)
+============================================================
+Evaluating Term Typing:   0%|                                        | 0/20 [00:00<?, ?it/s]
+✗ PROMPT: Question: What is the medical/ontological type of 'острый миелоидный лейкоз'? An...
+  MODEL : adolescence
+  LABEL : Disease
+Evaluating Term Typing:   5%|█▌                              | 1/20 [00:12<03:50, 12.15s/it]
+✗ PROMPT: Question: What is the medical/ontological type of 'acute myeloid leukemia'? Answ...
+  MODEL : acute myeloid leukemia
+  LABEL : Disease
+Evaluating Term Typing:  10%|███▏                            | 2/20 [00:12<01:38,  5.50s/it]
+✗ PROMPT: Question: What is the medical/ontological type of 'AML'? Answer with one of: Dis...
+  MODEL : anatomical entity
+  LABEL : Disease
+Evaluating Term Typing:  15%|████▊                           | 3/20 [00:13<00:53,  3.15s/it]
+✗ PROMPT: Question: What is the medical/ontological type of 'миелодиспластический синдром'...
+  MODEL : adolescence
+  LABEL : Disease
+Evaluating Term Typing:  20%|██████▍                         | 4/20 [00:13<00:32,  2.03s/it]
+✗ PROMPT: Question: What is the medical/ontological type of 'нейролейкоз'? Answer with one...
+  MODEL : adolescence
+  LABEL : Disease
+Evaluating Term Typing:  25%|████████                        | 5/20 [00:13<00:20,  1.39s/it]
+✗ PROMPT: Question: What is the medical/ontological type of 'анемия'? Answer with one of: ...
+  MODEL : abbreviation
+  LABEL : Condition
+Evaluating Term Typing:  30%|█████████▌                      | 6/20 [00:14<00:14,  1.03s/it]
+✗ PROMPT: Question: What is the medical/ontological type of 'тромбоцитопения'? Answer with...
+  MODEL : abbreviation
+  LABEL : Condition
+Evaluating Term Typing:  35%|███████████▏                    | 7/20 [00:14<00:10,  1.28it/s]
+✗ PROMPT: Question: What is the medical/ontological type of 'нейтропения'? Answer with one...
+  MODEL : abbreviation
+  LABEL : Condition
+Evaluating Term Typing:  40%|████████████▊                   | 8/20 [00:14<00:07,  1.64it/s]
+✗ PROMPT: Question: What is the medical/ontological type of 'лихорадка'? Answer with one o...
+  MODEL : abbreviation
+  LABEL : Symptom
+Evaluating Term Typing:  45%|██████████████▍                 | 9/20 [00:15<00:05,  1.95it/s]
+✗ PROMPT: Question: What is the medical/ontological type of 'геморрагический синдром'? Ans...
+  MODEL : adolescence
+  LABEL : Symptom
+Evaluating Term Typing:  50%|███████████████▌               | 10/20 [00:15<00:05,  1.95it/s]
+✗ PROMPT: Question: What is the medical/ontological type of 'трансплантация гемопоэтически...
+  MODEL : Anatomical Entity
+  LABEL : Procedure
+Evaluating Term Typing:  55%|█████████████████              | 11/20 [00:16<00:04,  1.99it/s]
+✗ PROMPT: Question: What is the medical/ontological type of 'химиотерапия'? Answer with on...
+  MODEL : abbreviation
+  LABEL : Procedure
+Evaluating Term Typing:  60%|██████████████████▌            | 12/20 [00:16<00:03,  2.29it/s]
+✗ PROMPT: Question: What is the medical/ontological type of 'спинномозговая пункция'? Answ...
+  MODEL : abbreviation
+  LABEL : Procedure
+Evaluating Term Typing:  65%|████████████████████▏          | 13/20 [00:16<00:02,  2.55it/s]
+✗ PROMPT: Question: What is the medical/ontological type of 'биопсия костного мозга'? Answ...
+  MODEL : abbreviation
+  LABEL : Procedure
+Evaluating Term Typing:  70%|█████████████████████▋         | 14/20 [00:16<00:02,  2.82it/s]
+✗ PROMPT: Question: What is the medical/ontological type of 'эхокардиография'? Answer with...
+  MODEL : abbreviation
+  LABEL : Procedure
+Evaluating Term Typing:  75%|███████████████████████▎       | 15/20 [00:17<00:01,  2.91it/s]
+✗ PROMPT: Question: What is the medical/ontological type of 'иммунофенотипирование'? Answe...
+  MODEL : adolescence
+  LABEL : DiagnosticMethod
+Evaluating Term Typing:  80%|████████████████████████▊      | 16/20 [00:17<00:01,  3.12it/s]
+✗ PROMPT: Question: What is the medical/ontological type of 'цитогенетическое исследование...
+  MODEL : adolescence
+  LABEL : DiagnosticMethod
+Evaluating Term Typing:  85%|██████████████████████████▎    | 17/20 [00:17<00:01,  2.98it/s]
+✗ PROMPT: Question: What is the medical/ontological type of 'ПЦР'? Answer with one of: Dis...
+  MODEL : 
+  LABEL : DiagnosticMethod
+Evaluating Term Typing:  90%|███████████████████████████▉   | 18/20 [00:18<00:00,  3.34it/s]
+✗ PROMPT: Question: What is the medical/ontological type of 'FISH'? Answer with one of: Di...
+  MODEL : abbreviation
+  LABEL : DiagnosticMethod
+Evaluating Term Typing:  95%|█████████████████████████████▍ | 19/20 [00:18<00:00,  3.63it/s]
+✗ PROMPT: Question: What is the medical/ontological type of 'цитарабин'? Answer with one o...
+  MODEL : abbreviation
+  LABEL : Drug
+Evaluating Term Typing: 100%|███████████████████████████████| 20/20 [00:18<00:00,  1.08it/s]
+
+📊 Term Typing Accuracy: 0.00%
+
+============================================================
+TASK: Taxonomy Discovery (Medical Domain)
+============================================================
+Computing F1 for Taxonomy Discovery: 100%|██████████████████| 20/20 [00:03<00:00,  5.98it/s]
+
+📊 Taxonomy Discovery F1 Score: 0.00%
+
+============================================================
+TASK: Relation Extraction (Medical Domain)
+============================================================
+Computing F1 for Relation Extraction: 100%|█████████████████| 13/13 [00:02<00:00,  6.15it/s]
+
+📊 Relation Extraction F1 Score: 0.00%
+
+======================================================================
+EXPERIMENT SUMMARY
+======================================================================
+  term_typing: 0.00%
+  taxonomy_f1: 0.00%
+  relation_f1: 0.00%
+
+Conclusions:
+  - Zero-Shot LLMs struggle with domain-specific ontology tasks
+  - Term Typing is particularly challenging without fine-tuning
+  - Fine-tuning with LoRA can significantly improve performance
+  - Medical domain requires specialized training data
+======================================================================

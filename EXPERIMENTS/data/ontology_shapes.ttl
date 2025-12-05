@@ -1,0 +1,21 @@
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix ex: <http://example.org/aml/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+# Every Disease should have at least one symptom or diagnostic test
+ex:DiseaseShape a sh:NodeShape ;
+    sh:targetClass ex:Disease ;
+    sh:or (
+        [ sh:property [ sh:path ex:hasSymptom ; sh:minCount 1 ] ]
+        [ sh:property [ sh:path ex:diagnosedBy ; sh:minCount 1 ] ]
+    ) ;
+    sh:message "Disease should have at least one symptom or diagnostic test." .
+
+# Every Treatment should include at least one drug
+ex:TreatmentShape a sh:NodeShape ;
+    sh:targetClass ex:Treatment ;
+    sh:property [
+        sh:path ex:includesDrug ;
+        sh:minCount 1 ;
+        sh:message "Treatment should include at least one drug." ;
+    ] .

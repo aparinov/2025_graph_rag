@@ -1,0 +1,55 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix ex: <http://example.org/> .
+
+ex:AcuteMyeloidLeukemia rdf:type owl:Class .
+ex:ChemotherapyDrug rdf:type owl:Class .
+ex:DiagnosticTest rdf:type owl:Class .
+ex:GeneticMarker rdf:type owl:Class .
+ex:Symptom rdf:type owl:Class .
+ex:TreatmentProtocol rdf:type owl:Class .
+ex:Patient rdf:type owl:Class .
+ex:BoneMarrow rdf:type owl:Class .
+ex:BloodCell rdf:type owl:Class .
+ex:Remission rdf:type owl:Class .
+
+ex:treats_with rdf:type owl:ObjectProperty ;
+    rdfs:domain ex:AcuteMyeloidLeukemia ;
+    rdfs:range ex:ChemotherapyDrug .
+
+ex:diagnosed_by rdf:type owl:ObjectProperty ;
+    rdfs:domain ex:AcuteMyeloidLeukemia ;
+    rdfs:range ex:DiagnosticTest .
+
+ex:has_marker rdf:type owl:ObjectProperty ;
+    rdfs:domain ex:AcuteMyeloidLeukemia ;
+    rdfs:range ex:GeneticMarker .
+
+ex:has_symptom rdf:type owl:ObjectProperty ;
+    rdfs:domain ex:AcuteMyeloidLeukemia ;
+    rdfs:range ex:Symptom .
+
+ex:has_disease rdf:type owl:ObjectProperty ;
+    rdfs:domain ex:Patient ;
+    rdfs:range ex:AcuteMyeloidLeukemia .
+
+ex:undergoes rdf:type owl:ObjectProperty ;
+    rdfs:domain ex:Patient ;
+    rdfs:range ex:TreatmentProtocol .
+
+ex:includes rdf:type owl:ObjectProperty ;
+    rdfs:domain ex:TreatmentProtocol ;
+    rdfs:range ex:ChemotherapyDrug .
+
+ex:contains rdf:type owl:ObjectProperty ;
+    rdfs:domain ex:BoneMarrow ;
+    rdfs:range ex:BloodCell .
+
+ex:affects rdf:type owl:ObjectProperty ;
+    rdfs:domain ex:AcuteMyeloidLeukemia ;
+    rdfs:range ex:BoneMarrow .
+
+ex:leads_to rdf:type owl:ObjectProperty ;
+    rdfs:domain ex:TreatmentProtocol ;
+    rdfs:range ex:Remission .

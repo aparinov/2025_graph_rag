@@ -1,0 +1,61 @@
+@prefix ex: <http://example.org/aml/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+
+<http://example.org/aml/> a owl:Ontology ;
+    rdfs:label "Acute Myeloid Leukemia Ontology" .
+
+# Classes
+ex:Disease a owl:Class ; rdfs:label "Disease" .
+ex:AcuteMyeloidLeukemia a owl:Class ; rdfs:subClassOf ex:Disease ; rdfs:label "Acute Myeloid Leukemia" .
+ex:Symptom a owl:Class ; rdfs:label "Symptom" .
+ex:Procedure a owl:Class ; rdfs:label "Procedure" .
+ex:Treatment a owl:Class ; rdfs:subClassOf ex:Procedure ; rdfs:label "Treatment" .
+ex:DiagnosticTest a owl:Class ; rdfs:subClassOf ex:Procedure ; rdfs:label "Diagnostic Test" .
+ex:Drug a owl:Class ; rdfs:label "Drug" .
+ex:GeneticMarker a owl:Class ; rdfs:label "Genetic Marker" .
+ex:AnatomicalEntity a owl:Class ; rdfs:label "Anatomical Entity" .
+ex:Patient a owl:Class ; rdfs:label "Patient" .
+ex:Prognosis a owl:Class ; rdfs:label "Prognosis" .
+
+# Object Properties
+ex:hasSymptom a owl:ObjectProperty ;
+    rdfs:domain ex:Disease ;
+    rdfs:range ex:Symptom ;
+    rdfs:label "has symptom" .
+
+ex:treatedWith a owl:ObjectProperty ;
+    rdfs:domain ex:Disease ;
+    rdfs:range ex:Treatment ;
+    rdfs:label "treated with" .
+
+ex:diagnosedBy a owl:ObjectProperty ;
+    rdfs:domain ex:Disease ;
+    rdfs:range ex:DiagnosticTest ;
+    rdfs:label "diagnosed by" .
+
+ex:hasGeneticMarker a owl:ObjectProperty ;
+    rdfs:domain ex:Disease ;
+    rdfs:range ex:GeneticMarker ;
+    rdfs:label "has genetic marker" .
+
+ex:affects a owl:ObjectProperty ;
+    rdfs:domain ex:Disease ;
+    rdfs:range ex:AnatomicalEntity ;
+    rdfs:label "affects" .
+
+ex:includesDrug a owl:ObjectProperty ;
+    rdfs:domain ex:Treatment ;
+    rdfs:range ex:Drug ;
+    rdfs:label "includes drug" .
+
+ex:hasDiagnosis a owl:ObjectProperty ;
+    rdfs:domain ex:Patient ;
+    rdfs:range ex:Disease ;
+    rdfs:label "has diagnosis" .
+
+ex:hasPrognosis a owl:ObjectProperty ;
+    rdfs:domain ex:Patient ;
+    rdfs:range ex:Prognosis ;
+    rdfs:label "has prognosis" .
