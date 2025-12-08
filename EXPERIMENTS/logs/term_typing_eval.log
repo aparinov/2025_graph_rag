@@ -1,0 +1,155 @@
+❯ python term_typing_eval.py --task evaluate
+======================================================================
+Term Typing Evaluation Experiment
+Medical Domain: Acute Myeloid Leukemia
+======================================================================
+Added 10 terms from 2025_graph_rag/EXPERIMENTS/data/acute_myeloid_leukemia_2025.md
+
+Loaded 40 terms for evaluation
+
+Evaluating with STRUCTURED prompting...
+------------------------------------------------------------
+  ✓ острый миелоидный лейкоз                 | Gold: D | Pred: D
+  ✓ acute myeloid leukemia                   | Gold: D | Pred: D
+  ✓ химиотерапия                             | Gold: P | Pred: P
+  ✓ chemotherapy                             | Gold: P | Pred: P
+  ✓ лихорадка                                | Gold: S | Pred: S
+  ✓ fever                                    | Gold: S | Pred: S
+  ✓ иммунофенотипирование                    | Gold: T | Pred: T
+  ✓ immunophenotyping                        | Gold: T | Pred: T
+  ✓ цитарабин                                | Gold: M | Pred: M
+  ✓ cytarabine                               | Gold: M | Pred: M
+  ✓ костный мозг                             | Gold: A | Pred: A
+  ✓ bone marrow                              | Gold: A | Pred: A
+  ✓ FLT3                                     | Gold: G | Pred: G
+  ✓ t(8;21)                                  | Gold: G | Pred: G
+  ✓ нейтропения                              | Gold: C | Pred: C
+  ✓ neutropenia                              | Gold: C | Pred: C
+  ✗ тромбоцитопения                          | Gold: C | Pred: D
+  ✓ thrombocytopenia                         | Gold: C | Pred: C
+  ✓ трансплантация гемопоэтических стволовых | Gold: P | Pred: P
+  ✓ hematopoietic stem cell transplantation  | Gold: P | Pred: P
+  ✓ миелодиспластический синдром             | Gold: D | Pred: D
+  ✓ myelodysplastic syndrome                 | Gold: D | Pred: D
+  ✗ геморрагический синдром                  | Gold: S | Pred: D
+  ✗ hemorrhagic syndrome                     | Gold: S | Pred: D
+  ✓ RUNX1-RUNX1T1                            | Gold: G | Pred: G
+  ✓ NPM1                                     | Gold: G | Pred: G
+  ✓ ПЦР                                      | Gold: T | Pred: T
+  ✓ PCR                                      | Gold: T | Pred: T
+  ✓ FISH                                     | Gold: T | Pred: T
+  ✓ спинномозговая пункция                   | Gold: P | Pred: P
+  ✗ ТГСК                                     | Gold: P | Pred: G
+  ✗ АЛТ                                      | Gold: D | Pred: T
+  ✗ АСТ                                      | Gold: D | Pred: T
+  ✗ ТГСК                                     | Gold: P | Pred: G
+  ✗ БЛРС                                     | Gold: D | Pred: C
+  ✗ ВДЦ                                      | Gold: D | Pred: C
+  ✓ ВИЧ                                      | Gold: D | Pred: D
+  ✗ ВОЗ                                      | Gold: A | Pred: C
+  ✗ ВДПХТ                                    | Gold: P | Pred: C
+  ✗ ДНК                                      | Gold: D | Pred: G
+
+Evaluating with COT prompting...
+------------------------------------------------------------
+  ✓ острый миелоидный лейкоз                 | Gold: D | Pred: D
+  ✓ acute myeloid leukemia                   | Gold: D | Pred: D
+  ✓ химиотерапия                             | Gold: P | Pred: P
+  ✓ chemotherapy                             | Gold: P | Pred: P
+  ✓ лихорадка                                | Gold: S | Pred: S
+  ✓ fever                                    | Gold: S | Pred: S
+  ✓ иммунофенотипирование                    | Gold: T | Pred: T
+  ✓ immunophenotyping                        | Gold: T | Pred: T
+  ✓ цитарабин                                | Gold: M | Pred: M
+  ✓ cytarabine                               | Gold: M | Pred: M
+  ✓ костный мозг                             | Gold: A | Pred: A
+  ✓ bone marrow                              | Gold: A | Pred: A
+  ✓ FLT3                                     | Gold: G | Pred: G
+  ✓ t(8;21)                                  | Gold: G | Pred: G
+  ✓ нейтропения                              | Gold: C | Pred: C
+  ✓ neutropenia                              | Gold: C | Pred: C
+  ✓ тромбоцитопения                          | Gold: C | Pred: C
+  ✓ thrombocytopenia                         | Gold: C | Pred: C
+  ✓ трансплантация гемопоэтических стволовых | Gold: P | Pred: P
+  ✓ hematopoietic stem cell transplantation  | Gold: P | Pred: P
+  ✓ миелодиспластический синдром             | Gold: D | Pred: D
+  ✓ myelodysplastic syndrome                 | Gold: D | Pred: D
+  ✗ геморрагический синдром                  | Gold: S | Pred: D
+  ✗ hemorrhagic syndrome                     | Gold: S | Pred: D
+  ✓ RUNX1-RUNX1T1                            | Gold: G | Pred: G
+  ✓ NPM1                                     | Gold: G | Pred: G
+  ✓ ПЦР                                      | Gold: T | Pred: T
+  ✓ PCR                                      | Gold: T | Pred: T
+  ✓ FISH                                     | Gold: T | Pred: T
+  ✓ спинномозговая пункция                   | Gold: P | Pred: P
+  ✗ ТГСК                                     | Gold: P | Pred: G
+  ✗ АЛТ                                      | Gold: D | Pred: T
+  ✗ АСТ                                      | Gold: D | Pred: T
+  ✗ ТГСК                                     | Gold: P | Pred: G
+  ✗ БЛРС                                     | Gold: D | Pred: C
+  ✗ ВДЦ                                      | Gold: D | Pred: C
+  ✓ ВИЧ                                      | Gold: D | Pred: D
+  ✗ ВОЗ                                      | Gold: A | Pred: C
+  ✗ ВДПХТ                                    | Gold: P | Pred: C
+  ✗ ДНК                                      | Gold: D | Pred: G
+
+Evaluating with FEW-SHOT prompting...
+------------------------------------------------------------
+  ✓ острый миелоидный лейкоз                 | Gold: D | Pred: D
+  ✓ acute myeloid leukemia                   | Gold: D | Pred: D
+  ✓ химиотерапия                             | Gold: P | Pred: P
+  ✓ chemotherapy                             | Gold: P | Pred: P
+  ✓ лихорадка                                | Gold: S | Pred: S
+  ✓ fever                                    | Gold: S | Pred: S
+  ✓ иммунофенотипирование                    | Gold: T | Pred: T
+  ✗ immunophenotyping                        | Gold: T | Pred: P
+  ✓ цитарабин                                | Gold: M | Pred: M
+  ✓ cytarabine                               | Gold: M | Pred: M
+  ✓ костный мозг                             | Gold: A | Pred: A
+  ✓ bone marrow                              | Gold: A | Pred: A
+  ✓ FLT3                                     | Gold: G | Pred: G
+  ✓ t(8;21)                                  | Gold: G | Pred: G
+  ✓ нейтропения                              | Gold: C | Pred: C
+  ✓ neutropenia                              | Gold: C | Pred: C
+  ✗ тромбоцитопения                          | Gold: C | Pred: S
+  ✓ thrombocytopenia                         | Gold: C | Pred: C
+  ✓ трансплантация гемопоэтических стволовых | Gold: P | Pred: P
+  ✓ hematopoietic stem cell transplantation  | Gold: P | Pred: P
+  ✓ миелодиспластический синдром             | Gold: D | Pred: D
+  ✓ myelodysplastic syndrome                 | Gold: D | Pred: D
+  ✗ геморрагический синдром                  | Gold: S | Pred: C
+  ✗ hemorrhagic syndrome                     | Gold: S | Pred: C
+  ✓ RUNX1-RUNX1T1                            | Gold: G | Pred: G
+  ✓ NPM1                                     | Gold: G | Pred: G
+  ✓ ПЦР                                      | Gold: T | Pred: T
+  ✓ PCR                                      | Gold: T | Pred: T
+  ✓ FISH                                     | Gold: T | Pred: T
+  ✗ спинномозговая пункция                   | Gold: P | Pred: T
+  ✗ ТГСК                                     | Gold: P | Pred: G
+  ✗ АЛТ                                      | Gold: D | Pred: T
+  ✗ АСТ                                      | Gold: D | Pred: T
+  ✗ ТГСК                                     | Gold: P | Pred: G
+  ✗ БЛРС                                     | Gold: D | Pred: C
+  ✗ ВДЦ                                      | Gold: D | Pred: C
+  ✓ ВИЧ                                      | Gold: D | Pred: D
+  ✗ ВОЗ                                      | Gold: A | Pred: C
+  ✗ ВДПХТ                                    | Gold: P | Pred: C
+  ✗ ДНК                                      | Gold: D | Pred: G
+
+======================================================================
+RESULTS SUMMARY
+======================================================================
+     Style  MAP@1 % Non-existent
+structured 70.00%          0.00%
+       cot 72.50%          0.00%
+  few-shot 65.00%          0.00%
+
+======================================================================
+EXPERIMENT COMPLETE
+======================================================================
+
+Key Findings:
+- Few-shot prompting often outperforms zero-shot
+- Chain-of-Thought can improve reasoning but may be verbose
+- Structured prompting provides consistent output format
+- Medical term typing requires domain-specific training

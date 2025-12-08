@@ -1,0 +1,161 @@
+@prefix ex: <http://example.org/aml/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+ex: a owl:Ontology ;
+    rdfs:label "Acute Myeloid Leukemia Ontology" .
+
+ex:AML a ex:AcuteMyeloidLeukemia ;
+    ex:hasDiagnosis ex:cytogenetic_analysis,
+        ex:immunophenotyping ;
+    ex:hasGeneticMarker ex:FLT3_mutations,
+        ex:NPM1_mutations,
+        ex:chromosomal_translocations .
+
+ex:Acute_Myeloid_Leukemia a ex:AcuteMyeloidLeukemia ;
+    ex:affects ex:bone_marrow ;
+    ex:hasSymptom ex:fever,
+        ex:hemorrhagic_syndrome,
+        ex:weakness .
+
+ex:Complete_remission a ex:Disease ;
+    ex:hasPrognosis ex:less_than_5_blast_cells_in_bone_marrow_aspirate .
+
+ex:FISH_analysis a ex:Procedure ;
+    ex:diagnosedBy ex:specific_genetic_abnormalities .
+
+ex:Minimal_residual_disease_MRD_monitoring a ex:Procedure ;
+    ex:diagnosedBy ex:PCR,
+        ex:flow_cytometry .
+
+ex:affects a owl:ObjectProperty ;
+    rdfs:label "affects" ;
+    rdfs:domain ex:Disease ;
+    rdfs:range ex:AnatomicalEntity .
+
+ex:diagnosedBy a owl:ObjectProperty ;
+    rdfs:label "diagnosed by" ;
+    rdfs:domain ex:Disease ;
+    rdfs:range ex:DiagnosticTest .
+
+ex:hasDiagnosis a owl:ObjectProperty ;
+    rdfs:label "has diagnosis" ;
+    rdfs:domain ex:Patient ;
+    rdfs:range ex:Disease .
+
+ex:hasGeneticMarker a owl:ObjectProperty ;
+    rdfs:label "has genetic marker" ;
+    rdfs:domain ex:Disease ;
+    rdfs:range ex:GeneticMarker .
+
+ex:hasPrognosis a owl:ObjectProperty ;
+    rdfs:label "has prognosis" ;
+    rdfs:domain ex:Patient ;
+    rdfs:range ex:Prognosis .
+
+ex:hasSymptom a owl:ObjectProperty ;
+    rdfs:label "has symptom" ;
+    rdfs:domain ex:Disease ;
+    rdfs:range ex:Symptom .
+
+ex:includesDrug a owl:ObjectProperty ;
+    rdfs:label "includes drug" ;
+    rdfs:domain ex:Treatment ;
+    rdfs:range ex:Drug .
+
+ex:inv16 a ex:GeneticMarker ;
+    ex:hasGeneticMarker ex:favorable_cytogenetics .
+
+ex:t821 a ex:GeneticMarker ;
+    ex:hasGeneticMarker ex:favorable_cytogenetics .
+
+ex:treatedWith a owl:ObjectProperty ;
+    rdfs:label "treated with" ;
+    rdfs:domain ex:Disease ;
+    rdfs:range ex:Treatment .
+
+ex:FLT3_mutations a ex:GeneticMarker .
+
+ex:NPM1_mutations a ex:GeneticMarker .
+
+ex:PCR a ex:DiagnosticTest .
+
+ex:__ a ex:Disease ;
+    ex:hasDiagnosis ex:__ .
+
+ex:anthracyclines a ex:Drug .
+
+ex:bone_marrow a ex:AnatomicalEntity .
+
+ex:chromosomal_translocations a ex:GeneticMarker .
+
+ex:consolidation_therapy a ex:Treatment .
+
+ex:cytarabine a ex:Drug .
+
+ex:cytogenetic_analysis a ex:DiagnosticTest .
+
+ex:fever a ex:Symptom .
+
+ex:flow_cytometry a ex:DiagnosticTest .
+
+ex:hematopoietic_stem_cell_transplantation a ex:Procedure .
+
+ex:hemorrhagic_syndrome a ex:Symptom .
+
+ex:immunophenotyping a ex:DiagnosticTest .
+
+ex:induction_chemotherapy a ex:Treatment .
+
+ex:less_than_5_blast_cells_in_bone_marrow_aspirate a ex:Prognosis .
+
+ex:specific_genetic_abnormalities a ex:GeneticMarker .
+
+ex:weakness a ex:Symptom .
+
+ex:AcuteMyeloidLeukemia a ex:Disease,
+        owl:Class ;
+    rdfs:label "Acute Myeloid Leukemia" ;
+    ex:includesDrug ex:anthracyclines,
+        ex:consolidation_therapy,
+        ex:cytarabine,
+        ex:induction_chemotherapy ;
+    ex:treatedWith ex:Drug,
+        ex:hematopoietic_stem_cell_transplantation ;
+    rdfs:subClassOf ex:Disease .
+
+ex:AnatomicalEntity a owl:Class ;
+    rdfs:label "Anatomical Entity" .
+
+ex:Patient a owl:Class ;
+    rdfs:label "Patient" .
+
+ex:Prognosis a owl:Class ;
+    rdfs:label "Prognosis" .
+
+ex:favorable_cytogenetics a ex:Disease .
+
+ex:Symptom a owl:Class ;
+    rdfs:label "Symptom" .
+
+ex:Treatment a owl:Class ;
+    rdfs:label "Treatment" ;
+    rdfs:subClassOf ex:Procedure .
+
+ex:DiagnosticTest a owl:Class ;
+    rdfs:label "Diagnostic Test" ;
+    rdfs:subClassOf ex:Procedure .
+
+ex:Drug a ex:Drug,
+        owl:Class ;
+    rdfs:label "Drug" .
+
+ex:Procedure a owl:Class ;
+    rdfs:label "Procedure" .
+
+ex:GeneticMarker a owl:Class ;
+    rdfs:label "Genetic Marker" .
+
+ex:Disease a owl:Class ;
+    rdfs:label "Disease" .
+

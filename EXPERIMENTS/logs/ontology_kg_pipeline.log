@@ -1,0 +1,128 @@
+❯ python ontology_kg_pipeline.py --task all
+======================================================================
+Ontology-based Knowledge Graph Pipeline
+Medical Domain: Acute Myeloid Leukemia
+======================================================================
+
+📦 Checking dependencies:
+  OpenAI: ✅
+  RDFLib: ✅
+  SHACL: ✅
+  OWLReady2: ✅
+  NetworkX: ✅
+  RapidFuzz: ✅
+  py2neo: ✅
+Loading documents from: 2025_graph_rag/EXPERIMENTS/data/acute_myeloid_leukemia_2025.md
+
+📄 Loaded 30 documents
+
+📋 Initializing ontology...
+  ✅ Seed ontology: 2025_graph_rag/EXPERIMENTS/ontology_seed.ttl
+  ✅ SHACL shapes: 2025_graph_rag/EXPERIMENTS/ontology_shapes.ttl
+  ✅ Loaded 59 triples from seed ontology
+
+📄 Extracting triples from 5 documents...
+
+  Document 1:
+    Extracted 4 triples
+      - Acute Myeloid Leukemia --[hasSymptom]--> fever
+      - Acute Myeloid Leukemia --[hasSymptom]--> weakness
+      - Acute Myeloid Leukemia --[hasSymptom]--> hemorrhagic syndrome
+
+  Document 2:
+    Extracted 6 triples
+      - AML --[hasDiagnosis]--> cytogenetic analysis
+      - AML --[hasDiagnosis]--> immunophenotyping
+      - AML --[hasGeneticMarker]--> FLT3 mutations
+
+  Document 3:
+    Extracted 6 triples
+      - AcuteMyeloidLeukemia --[treatedWith]--> Drug
+      - AcuteMyeloidLeukemia --[includesDrug]--> cytarabine
+      - AcuteMyeloidLeukemia --[includesDrug]--> anthracyclines
+
+  Document 4:
+    Extracted 5 triples
+      - t(8;21) --[hasGeneticMarker]--> favorable cytogenetics
+      - inv(16) --[hasGeneticMarker]--> favorable cytogenetics
+      - Minimal residual disease (MRD) monitoring --[diagnosedBy]--> flow cytometry
+
+  Document 5:
+    Extracted 1 triples
+      - Острые миелоидные лейкозы --[hasDiagnosis]--> Острые миелоидные лейкозы
+
+  ✅ Total: 22 triples extracted
+
+📊 Adding 22 triples to knowledge graph...
+  ✅ Added 22 triples to KG (total: 110 triples)
+  ✅ KG saved to kg_medical.ttl
+
+🔍 Validating with SHACL...
+Usage of abort_on_error is deprecated. Use abort_on_first instead.
+  SHACL conforms: ❌ No
+  Violations:
+Validation Report
+Conforms: False
+Results (13):
+Constraint Violation in OrConstraintComponent (http://www.w3.org/ns/shacl#OrConstraintComponent):
+        Severity: sh:Violation
+        Source Shape: ex:DiseaseShape
+        Focus Node: ex:immunophenotyping
+        Value Node: ex:immunophenotyping
+        Message: Disease should have at least one symptom or diagnostic test.
+Constraint Violation in OrConstraintComponent (http://www.w3.org/ns/shacl#OrConstraintComponent):
+        Severity: sh:Violation
+        Source Shape: ex:DiseaseShape
+        Focus ...
+
+🧠 Running OWL reasoner...
+* Owlready2 * Running Pellet...
+    java -Xmx2000M -cp 2025_graph_rag/.venv/lib/python3.13/site-packages/owlready2/pellet/httpclient-4.2.3.jar:/Users/danonchik/dev/2025_graph_rag/.venv/lib/python3.13/site-packages/owlready2/pellet/aterm-java-1.6.jar:/Users/danonchik/dev/2025_graph_rag/.venv/lib/python3.13/site-packages/owlready2/pellet/xercesImpl-2.10.0.jar:/Users/danonchik/dev/2025_graph_rag/.venv/lib/python3.13/site-packages/owlready2/pellet/slf4j-api-1.6.4.jar:/Users/danonchik/dev/2025_graph_rag/.venv/lib/python3.13/site-packages/owlready2/pellet/jena-tdb-0.10.0.jar:/Users/danonchik/dev/2025_graph_rag/.venv/lib/python3.13/site-packages/owlready2/pellet/jena-iri-0.9.5.jar:/Users/danonchik/dev/2025_graph_rag/.venv/lib/python3.13/site-packages/owlready2/pellet/owlapi-distribution-3.4.3-bin.jar:/Users/danonchik/dev/2025_graph_rag/.venv/lib/python3.13/site-packages/owlready2/pellet/jcl-over-slf4j-1.6.4.jar:/Users/danonchik/dev/2025_graph_rag/.venv/lib/python3.13/site-packages/owlready2/pellet/slf4j-log4j12-1.6.4.jar:/Users/danonchik/dev/2025_graph_rag/.venv/lib/python3.13/site-packages/owlready2/pellet/antlr-runtime-3.2.jar:/Users/danonchik/dev/2025_graph_rag/.venv/lib/python3.13/site-packages/owlready2/pellet/log4j-core-2.19.0.jar:/Users/danonchik/dev/2025_graph_rag/.venv/lib/python3.13/site-packages/owlready2/pellet/pellet-2.3.1.jar:/Users/danonchik/dev/2025_graph_rag/.venv/lib/python3.13/site-packages/owlready2/pellet/jgrapht-jdk1.5.jar:/Users/danonchik/dev/2025_graph_rag/.venv/lib/python3.13/site-packages/owlready2/pellet/commons-codec-1.6.jar:/Users/danonchik/dev/2025_graph_rag/.venv/lib/python3.13/site-packages/owlready2/pellet/antlr-3.2.jar:/Users/danonchik/dev/2025_graph_rag/.venv/lib/python3.13/site-packages/owlready2/pellet/xml-apis-1.4.01.jar:/Users/danonchik/dev/2025_graph_rag/.venv/lib/python3.13/site-packages/owlready2/pellet/log4j-1.2-api-2.19.0.jar:/Users/danonchik/dev/2025_graph_rag/.venv/lib/python3.13/site-packages/owlready2/pellet/httpcore-4.2.2.jar:/Users/danonchik/dev/2025_graph_rag/.venv/lib/python3.13/site-packages/owlready2/pellet/jena-arq-2.10.0.jar:/Users/danonchik/dev/2025_graph_rag/.venv/lib/python3.13/site-packages/owlready2/pellet/log4j-api-2.19.0.jar:/Users/danonchik/dev/2025_graph_rag/.venv/lib/python3.13/site-packages/owlready2/pellet/jena-core-2.10.0.jar pellet.Pellet realize --loader Jena --input-format N-Triples --infer-prop-values --infer-data-prop-values --ignore-imports /var/folders/bb/0p5vgrdj79z2tytq6w05b1v80000gn/T/tmpm65sciee
+* Owlready2 * Pellet took 1.0288307666778564 seconds
+* Owlready * (NB: only changes on entities loaded in Python are shown, other changes are done but not listed)
+* Owlready2 * Warning: ignoring cyclic type of, involving storid 312
+
+  Reasoner OK: ✅
+  Inconsistent classes: 0
+
+🕸️  Building NetworkX graph...
+  ✅ Graph: 47 nodes, 41 edges
+
+======================================================================
+ANSWERING QUESTIONS
+======================================================================
+
+❓ Question: What are the symptoms of Acute Myeloid Leukemia?
+   Linked entities: ['Acute_Myeloid_Leukemia', 'AcuteMyeloidLeukemia', 'Symptom']
+   ✅ Answer: The symptoms of Acute Myeloid Leukemia include weakness [FACT:1], fever [FACT:2], and hemorrhagic syndrome [FACT:3]. These symptoms arise due to the disease's impact on the bone marrow [FACT:0].
+
+
+❓ Question: What genetic markers are associated with AML?
+   Linked entities: ['GeneticMarker', 'hasGeneticMarker', 'AML']
+   ✅ Answer: The genetic markers associated with Acute Myeloid Leukemia (AML) include NPM1 mutations, FLT3 mutations, and chromosomal translocations [FACT:14][FACT:15][FACT:18]. These markers are important for the diagnosis and prognosis of the disease.
+
+
+❓ Question: What treatments are available for AML?
+   Linked entities: ['Treatment', 'Patient', 'AML']
+   ✅ Answer: Treatments available for Acute Myeloid Leukemia (AML) include various drugs, as indicated by the fact that AML is treated with drugs [FACT:16]. Additionally, AML can be diagnosed through procedures such as cytogenetic analysis and immunophenotyping [FACT:20][FACT:21].
+
+
+❓ Question: What diagnostic tests are used for AML?
+   Linked entities: ['DiagnosticTest', 'hasDiagnosis', 'AML']
+   ✅ Answer: The diagnostic tests used for Acute Myeloid Leukemia (AML) include cytogenetic analysis and immunophenotyping [FACT:16][FACT:17]. Additionally, AML is associated with specific genetic markers such as NPM1 mutations, FLT3 mutations, and chromosomal translocations [FACT:14][FACT:15][FACT:18].
+
+
+❓ Question: What anatomical structures are affected by AML?
+   Linked entities: ['affects', 'AnatomicalEntity', 'AML']
+   ✅ Answer: Acute Myeloid Leukemia (AML) affects anatomical structures as it is classified as a disease that impacts various anatomical entities [FACT:12]. The specific anatomical structures affected by AML are not detailed in the provided facts, but the disease itself is known to involve the bone marrow and blood cells, as it is characterized by the proliferation of abnormal myeloid cells.
+
+
+======================================================================
+PIPELINE COMPLETE
+======================================================================
+
+Summary:
+- Ontology-based KG enables grounded question answering
+- SHACL validation ensures data quality
+- OWL reasoning provides consistency checking
+- Graph-based retrieval (GraphRAG) improves answer accuracy

@@ -1,0 +1,126 @@
+❯ python ontology_cot_experiment.py --data-file data/acute_myeloid_leukemia_2025.md
+======================================================================
+Ontology Experiment: Chain-of-Thought vs Structured Prompting
+Medical Domain: Acute Myeloid Leukemia
+======================================================================
+Loading additional data from: data/acute_myeloid_leukemia_2025.md
+
+Loaded 27 terms for classification
+
+======================================================================
+CLASSIFICATION EXPERIMENT: Chain-of-Thought vs Structured Prompting
+======================================================================
+
+Evaluating with COT prompting...
+  Term: острый миелоидный лейкоз                 | Gold: Disease         | Pred: Disease
+  Term: химиотерапия                             | Gold: Procedure       | Pred: Disease
+  Term: иммунофенотипирование                    | Gold: DiagnosticMethod | Pred: Disease
+  Term: лихорадка                                | Gold: Symptom         | Pred: Disease
+  Term: цитарабин                                | Gold: Drug            | Pred: Drug
+  Term: костный мозг                             | Gold: AnatomicalEntity | Pred: AnatomicalEntity
+  Term: FLT3                                     | Gold: GeneticMarker   | Pred: Disease
+  Term: нейтропения                              | Gold: Condition       | Pred: Condition
+  Term: трансплантация гемопоэтических стволовых | Gold: Procedure       | Pred: Procedure
+  Term: миелодиспластический синдром             | Gold: Disease         | Pred: Disease
+  Term: RUNX1-RUNX1T1                            | Gold: GeneticMarker   | Pred: Disease
+  Term: спинномозговая пункция                   | Gold: Procedure       | Pred: Procedure
+  Term: ТГСК                                     | Gold: Procedure       | Pred: DiagnosticMethod
+  Term: АЛТ                                      | Gold: Abbreviation    | Pred: DiagnosticMethod
+  Term: АСТ                                      | Gold: Abbreviation    | Pred: DiagnosticMethod
+  Term: ТГСК                                     | Gold: Procedure       | Pred: DiagnosticMethod
+  Term: БЛРС                                     | Gold: Abbreviation    | Pred: Disease
+  Term: ВДЦ                                      | Gold: Abbreviation    | Pred: Condition
+  Term: ВИЧ                                      | Gold: Abbreviation    | Pred: Disease
+  Term: ВОЗ                                      | Gold: Abbreviation    | Pred: Disease
+  Term: ВДПХТ                                    | Gold: Procedure       | Pred: Disease
+  Term: ДНК                                      | Gold: Abbreviation    | Pred: GeneticMarker
+  Term: ЖКТ                                      | Gold: Abbreviation    | Pred: AnatomicalEntity
+  Term: ИА                                       | Gold: Abbreviation    | Pred: Condition
+  Term: ИФТ                                      | Gold: DiagnosticMethod | Pred: Disease
+  Term: КМ                                       | Gold: Abbreviation    | Pred: Condition
+  Term: КИ                                       | Gold: Abbreviation    | Pred: Disease
+
+COT Results:
+  MAP@1: 25.93%
+  % Non-existent: 0.00%
+
+Evaluating with STRUCTURED prompting...
+  Term: острый миелоидный лейкоз                 | Gold: Disease         | Pred: Disease
+  Term: химиотерапия                             | Gold: Procedure       | Pred: Procedure
+  Term: иммунофенотипирование                    | Gold: DiagnosticMethod | Pred: Procedure
+  Term: лихорадка                                | Gold: Symptom         | Pred: Symptom
+  Term: цитарабин                                | Gold: Drug            | Pred: Drug
+  Term: костный мозг                             | Gold: AnatomicalEntity | Pred: AnatomicalEntity
+  Term: FLT3                                     | Gold: GeneticMarker   | Pred: GeneticMarker
+  Term: нейтропения                              | Gold: Condition       | Pred: Condition
+  Term: трансплантация гемопоэтических стволовых | Gold: Procedure       | Pred: Procedure
+  Term: миелодиспластический синдром             | Gold: Disease         | Pred: Disease
+  Term: RUNX1-RUNX1T1                            | Gold: GeneticMarker   | Pred: GeneticMarker
+  Term: спинномозговая пункция                   | Gold: Procedure       | Pred: Procedure
+  Term: ТГСК                                     | Gold: Procedure       | Pred: Condition
+  Term: АЛТ                                      | Gold: Abbreviation    | Pred: DiagnosticMethod
+  Term: АСТ                                      | Gold: Abbreviation    | Pred: DiagnosticMethod
+  Term: ТГСК                                     | Gold: Procedure       | Pred: Condition
+  Term: БЛРС                                     | Gold: Abbreviation    | Pred: Condition
+  Term: ВДЦ                                      | Gold: Abbreviation    | Pred: Condition
+  Term: ВИЧ                                      | Gold: Abbreviation    | Pred: Disease
+  Term: ВОЗ                                      | Gold: Abbreviation    | Pred: Condition
+  Term: ВДПХТ                                    | Gold: Procedure       | Pred: Condition
+  Term: ДНК                                      | Gold: Abbreviation    | Pred: GeneticMarker
+  Term: ЖКТ                                      | Gold: Abbreviation    | Pred: AnatomicalEntity
+  Term: ИА                                       | Gold: Abbreviation    | Pred: Condition
+  Term: ИФТ                                      | Gold: DiagnosticMethod | Pred: Condition
+  Term: КМ                                       | Gold: Abbreviation    | Pred: Condition
+  Term: КИ                                       | Gold: Abbreviation    | Pred: Condition
+
+STRUCTURED Results:
+  MAP@1: 40.74%
+  % Non-existent: 0.00%
+
+======================================================================
+RESULTS SUMMARY
+======================================================================
+     Style  MAP@1 % Non-existent
+       cot 25.93%          0.00%
+structured 40.74%          0.00%
+
+======================================================================
+ONTOLOGY GENERATION EXPERIMENT
+======================================================================
+
+Generating ontology with 10 classes and 10 relations...
+
+Generated TTL (1737 chars):
+----------------------------------------
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix ex: <http://example.org/> .
+
+ex:AcuteMyeloidLeukemia rdf:type owl:Class .
+ex:ChemotherapyDrug rdf:type owl:Class .
+ex:DiagnosticTest rdf:type owl:Class .
+ex:GeneticMarker rdf:type owl:Class .
+ex:Symptom rdf:type owl:Class .
+ex:TreatmentProtocol rdf:type owl:Class .
+ex:Patient rdf:type owl:Class .
+ex:BoneMarrow rdf:type owl:Cl...
+----------------------------------------
+* Owlready2 * Running Pellet...
+* Owlready2 * Pellet took 1.037748098373413 seconds
+* Owlready * (NB: only changes on entities loaded in Python are shown, other changes are done but not listed)
+
+Validation: ✅ PASSED
+Message: Valid ontology. Inconsistent classes: 0
+
+✅ Ontology saved to generated_ontology.ttl
+
+======================================================================
+EXPERIMENT COMPLETE
+======================================================================
+
+Key Findings:
+- Chain-of-Thought (CoT) prompting encourages step-by-step reasoning
+- Structured prompting provides more consistent output format
+- Both approaches can produce non-existent types without proper constraints
+- Auto-fix mechanism can improve ontology consistency
