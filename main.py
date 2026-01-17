@@ -2,7 +2,10 @@
 
 import json
 import os
+import queue
 import re
+import threading
+import uuid
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Any, Dict, List, Optional, Tuple
 
@@ -43,6 +46,9 @@ OPENAI_QA_MODEL = os.getenv("OPENAI_QA_MODEL", "gpt-4o-mini")
 
 
 qdrant = QdrantManager(url=QDRANT_URL)
+
+_UPLOAD_QUEUE: "queue.Queue[Dict[str, Any]]" = queue.Queue()
+_UPLOAD_WORKER_STARTED = False
 
 
 _LABEL_SAFE_RE = re.compile(r"[^0-9A-Za-z_\u0400-\u04FF]")
@@ -111,6 +117,45 @@ def sanitize_properties(properties: Dict[str, Any]) -> Dict[str, Any]:
         else:
             cleaned[key] = str(value)
     return cleaned
+
+
+def _ensure_upload_worker() -> None:
+    global _UPLOAD_WORKER_STARTED
+    if _UPLOAD_WORKER_STARTED:
+        return
+    _UPLOAD_WORKER_STARTED = True
+
+    def _worker() -> None:
+        while True:
+            job = _UPLOAD_QUEUE.get()
+            session_name = job["session_name"]
+            files = job["files"]
+
+            for file_path in files:
+                try:
+                    if not os.path.exists(file_path):
+                        print(f"[WARNING] Файл не найден: {file_path}")
+                        continue
+                    result = process_document(file_path, session_name)
+                    if result["status"] == "exists":
+                        print(f"[WARNING] {result['message']}")
+                    elif result["status"] == "error":
+                        print(f"[WARNING] {result['message']}")
+                except Exception as exc:
+                    print(f"[WARNING] Ошибка при обработке {file_path}: {exc}")
+
+            _UPLOAD_QUEUE.task_done()
+
+    threading.Thread(target=_worker, name="upload-worker", daemon=True).start()
+
+
+def _enqueue_upload(files: List[str], session_name: str) -> str:
+    _ensure_upload_worker()
+    job_id = str(uuid.uuid4())
+    _UPLOAD_QUEUE.put(
+        {"job_id": job_id, "session_name": session_name, "files": files}
+    )
+    return job_id
 
 
 def strip_code_fences(text: str) -> str:
@@ -487,6 +532,12 @@ def on_session_change(session_name: str):
     return get_documents(session_name), f"Текущая сессия: {session_name}"
 
 
+def refresh_documents(session_name: str):
+    if not session_name:
+        return [], "⚠️ Выберите сессию."
+    return get_documents(session_name), f"Текущая сессия: {session_name}"
+
+
 def upload_pdfs(files, session_name: str, progress=gr.Progress()):
     """Upload and process PDF or Markdown documents"""
     if not session_name:
@@ -495,28 +546,17 @@ def upload_pdfs(files, session_name: str, progress=gr.Progress()):
         return "❌ Файлы не выбраны.", get_documents(session_name)
 
     file_list = files if isinstance(files, list) else [files]
-    messages = []
-    total = len(file_list)
+    file_paths: List[str] = []
+    for file_obj in file_list:
+        file_path = getattr(file_obj, "name", None) or str(file_obj)
+        file_paths.append(file_path)
 
-    for idx, file_obj in enumerate(file_list, start=1):
-        progress((idx - 1) / total, desc=f"Обработка файла {idx}/{total}...")
-        try:
-            result = process_document(file_obj.name, session_name)
-            if result["status"] == "exists":
-                messages.append(f"⚠️ {result['message']}")
-            elif result["status"] == "error":
-                messages.append(f"❌ {result['message']}")
-            else:
-                messages.append(
-                    f"✅ {result['document']}: "
-                    f"{result['chunks']} чанков, "
-                    f"{result['entities']} сущностей"
-                )
-        except Exception as exc:
-            messages.append(f"❌ Ошибка при обработке {file_obj.name}: {exc}")
-
-    progress(1.0, desc="Готово!")
-    return "\n".join(messages), get_documents(session_name)
+    job_id = _enqueue_upload(file_paths, session_name)
+    return (
+        f"🕒 Добавлено в очередь: {len(file_paths)} файл(ов). "
+        f"ID задания: {job_id}. Обработка продолжается в фоне.",
+        get_documents(session_name),
+    )
 
 
 def delete_session(session_name: str, confirmed: bool):
@@ -668,6 +708,7 @@ with gr.Blocks() as demo:
             ask_btn = gr.Button("Спросить")
 
             gr.Markdown("### Документы в сессии")
+            refresh_docs_btn = gr.Button("Обновить")
             document_table = gr.Dataframe(
                 headers=["Документ", "Создан", "Чанков", "Сущностей", "Связей"],
                 datatype=["str", "str", "number", "number", "number"],
@@ -689,6 +730,11 @@ with gr.Blocks() as demo:
         fn=upload_pdfs,
         inputs=[upload_files, session_selector],
         outputs=[upload_status, document_table],
+    )
+    refresh_docs_btn.click(
+        fn=refresh_documents,
+        inputs=[session_selector],
+        outputs=[document_table, session_status],
     )
     delete_session_btn.click(
         fn=delete_session,
