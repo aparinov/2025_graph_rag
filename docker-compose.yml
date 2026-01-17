@@ -1,20 +1,12 @@
 services:
-  neo4j:
-    container_name: neo4j
-    image: neo4j:latest
+  qdrant:
+    container_name: qdrant
+    image: qdrant/qdrant:latest
     volumes:
-      - ./neo4j/logs:/logs
-      - ./neo4j/config:/config
-      - ./neo4j/data:/data
-      - ./neo4j/plugins:/plugins
-    environment:
-      - NEO4J_AUTH=neo4j/RagPassword2025
-      - NEO4J_PLUGINS=["apoc"]
-      - NEO4J_dbms_security_procedures_unrestricted=apoc.*
-      - NEO4J_dbms_security_procedures_allowlist=apoc.*
+      - ./qdrant_storage:/qdrant/storage
     ports:
-      - "7474:7474"
-      - "7687:7687"
+      - "6333:6333"
+      - "6334:6334"
     restart: always
     networks:
       - gr_network
@@ -25,7 +17,7 @@ services:
       context: .
       dockerfile: Dockerfile
     depends_on:
-      - neo4j
+      - qdrant
     env_file:
       - .env
     environment:

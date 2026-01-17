@@ -37,3 +37,6 @@ rapidfuzz>=3.2.0
 # CLI
 argparse
 pathlib
+
+# HTTP/API
+requests>=2.31.0
