@@ -702,27 +702,7 @@ def answer_question(question: str, session_name: str) -> Tuple[str, str]:
     if not search_results:
         return "В текущих документах нет данных для ответа.", ""
 
-    # 2. Collect all entities from retrieved chunks
-    all_entities = {}
-    for chunk_data in search_results:
-        if "entities" in chunk_data and chunk_data["entities"]:
-            for ent in chunk_data["entities"]:
-                ent_key = f"{ent['name']}::{ent['type']}"
-                if ent_key not in all_entities:
-                    all_entities[ent_key] = ent
-
-    entities = list(all_entities.values())
-
-    # 3. Extract relations from chunks
-    llm = get_llm(OPENAI_INGEST_MODEL, temperature=0.0)
-    relations = extract_relations_from_chunks(search_results, llm, RELATION_PROMPT)
-
-    print(f"[DEBUG] Extracted {len(entities)} entities, {len(relations)} relations")
-
-    # 4. Build graph HTML
-    graph_html = build_graph_html(entities, relations)
-
-    # 5. Generate answer using LLM
+    # 2. Generate answer FIRST using LLM (fast response to user)
     qa_llm = get_llm(OPENAI_QA_MODEL, temperature=0.2)
     chain = QA_PROMPT | qa_llm | StrOutputParser()
 
@@ -739,7 +719,81 @@ def answer_question(question: str, session_name: str) -> Tuple[str, str]:
 
     print(f"[DEBUG] Generated answer")
 
+    # 3. Now process graph in background (slower operation)
+    # Collect all entities from retrieved chunks
+    all_entities = {}
+    for chunk_data in search_results:
+        if "entities" in chunk_data and chunk_data["entities"]:
+            for ent in chunk_data["entities"]:
+                ent_key = f"{ent['name']}::{ent['type']}"
+                if ent_key not in all_entities:
+                    all_entities[ent_key] = ent
+
+    entities = list(all_entities.values())
+
+    # 4. Extract relations from chunks (LLM call - can be slow)
+    llm = get_llm(OPENAI_INGEST_MODEL, temperature=0.0)
+    relations = extract_relations_from_chunks(search_results, llm, RELATION_PROMPT)
+
+    print(f"[DEBUG] Extracted {len(entities)} entities, {len(relations)} relations")
+
+    # 5. Build graph HTML
+    graph_html = build_graph_html(entities, relations)
+
     return answer, graph_html
+
+
+def answer_question_fast(question: str, session_name: str) -> str:
+    """Quick answer generation without graph processing"""
+    print(f"[DEBUG] Question: {question}")
+
+    search_results = qdrant.search(question, session_name, k=5)
+    print(f"[DEBUG] Found {len(search_results)} relevant chunks")
+
+    if not search_results:
+        return "В текущих документах нет данных для ответа."
+
+    qa_llm = get_llm(OPENAI_QA_MODEL, temperature=0.2)
+    chain = QA_PROMPT | qa_llm | StrOutputParser()
+
+    context = "\n\n".join(
+        [
+            f"[Документ: {r['document_name']}, Chunk {r['chunk_id']}]\n{r['text']}"
+            for r in search_results
+        ]
+    )
+
+    answer = chain.invoke({"question": question, "results": context})
+    print(f"[DEBUG] Generated answer")
+
+    return answer
+
+
+def generate_graph_from_question(question: str, session_name: str) -> str:
+    """Generate graph HTML from question context"""
+    search_results = qdrant.search(question, session_name, k=5)
+
+    if not search_results:
+        return ""
+
+    # Collect entities
+    all_entities = {}
+    for chunk_data in search_results:
+        if "entities" in chunk_data and chunk_data["entities"]:
+            for ent in chunk_data["entities"]:
+                ent_key = f"{ent['name']}::{ent['type']}"
+                if ent_key not in all_entities:
+                    all_entities[ent_key] = ent
+
+    entities = list(all_entities.values())
+
+    # Extract relations
+    llm = get_llm(OPENAI_INGEST_MODEL, temperature=0.0)
+    relations = extract_relations_from_chunks(search_results, llm, RELATION_PROMPT)
+
+    print(f"[DEBUG] Graph: {len(entities)} entities, {len(relations)} relations")
+
+    return build_graph_html(entities, relations)
 
 
 def chat(
@@ -756,10 +810,21 @@ def chat(
     history = history or []
     history.append({"role": "user", "content": message})
 
-    answer, graph_html = answer_question(message, session_name)
+    # Get answer quickly
+    answer = answer_question_fast(message, session_name)
     history.append({"role": "assistant", "content": answer})
 
-    return history, "", graph_html
+    # Show answer immediately with loading message for graph
+    loading_graph = (
+        "<div style='padding: 20px; text-align: center; color: #666;'>"
+        "⏳ Генерация графа знаний..."
+        "</div>"
+    )
+    yield history, "", loading_graph
+
+    # Now generate graph
+    graph_html = generate_graph_from_question(message, session_name)
+    yield history, "", graph_html
 
 
 with gr.Blocks() as demo:
