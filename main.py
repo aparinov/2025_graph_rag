@@ -39,6 +39,12 @@ PROXY_URL = (
     os.getenv("PROXY_URL") or os.getenv("HTTPS_PROXY") or os.getenv("HTTP_PROXY")
 )
 
+# Set proxy environment variables for OpenAI client
+if PROXY_URL:
+    os.environ["HTTP_PROXY"] = PROXY_URL
+    os.environ["HTTPS_PROXY"] = PROXY_URL
+    print(f"[DEBUG] Proxy configured: {PROXY_URL}")
+
 QDRANT_URL = os.getenv("QDRANT_URL", "http://localhost:6333")
 
 CHUNK_SIZE = int(os.getenv("CHUNK_SIZE", "800"))
