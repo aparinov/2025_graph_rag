@@ -43,7 +43,10 @@ PROXY_URL = (
 if PROXY_URL:
     os.environ["HTTP_PROXY"] = PROXY_URL
     os.environ["HTTPS_PROXY"] = PROXY_URL
+    # Exclude local services from proxy
+    os.environ["NO_PROXY"] = "localhost,127.0.0.1,qdrant,neo4j"
     print(f"[DEBUG] Proxy configured: {PROXY_URL}")
+    print(f"[DEBUG] NO_PROXY: {os.environ['NO_PROXY']}")
 
 QDRANT_URL = os.getenv("QDRANT_URL", "http://localhost:6333")
 
