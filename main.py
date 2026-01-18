@@ -70,14 +70,21 @@ _LABEL_SAFE_RE = re.compile(r"[^0-9A-Za-z_\u0400-\u04FF]")
 
 def build_http_client() -> httpx.Client:
     verify = os.getenv("SSL_CERT_FILE") or True
-    transport = httpx.HTTPTransport(retries=3)
     if PROXY_URL:
         try:
+            # Use 'all://' to catch all protocols
+            # Use separate transports for proxy to ensure retries work
+            proxy_transport = httpx.HTTPTransport(proxy=PROXY_URL, retries=3)
             return httpx.Client(
-                proxies=PROXY_URL, timeout=60, verify=verify, transport=transport
+                transport=proxy_transport,
+                timeout=60,
+                verify=verify,
             )
-        except TypeError:
+        except (TypeError, ValueError) as e:
+            print(f"[WARNING] Failed to configure proxy: {e}")
+            transport = httpx.HTTPTransport(retries=3)
             return httpx.Client(timeout=60, verify=verify, transport=transport)
+    transport = httpx.HTTPTransport(retries=3)
     return httpx.Client(timeout=60, verify=verify, transport=transport)
 
 
