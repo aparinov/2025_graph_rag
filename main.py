@@ -12,7 +12,10 @@ from typing import Any, Dict, List, Optional, Tuple
 import httpx
 import gradio as gr
 from dotenv import load_dotenv
-from langchain_community.document_loaders import UnstructuredPDFLoader, UnstructuredMarkdownLoader
+from langchain_community.document_loaders import (
+    UnstructuredPDFLoader,
+    UnstructuredMarkdownLoader,
+)
 from langchain_openai import ChatOpenAI
 from langchain_text_splitters import CharacterTextSplitter
 from langchain_core.prompts import ChatPromptTemplate
@@ -32,7 +35,9 @@ except ImportError:
 load_dotenv(override=True)
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
-PROXY_URL = os.getenv("PROXY_URL") or os.getenv("HTTPS_PROXY") or os.getenv("HTTP_PROXY")
+PROXY_URL = (
+    os.getenv("PROXY_URL") or os.getenv("HTTPS_PROXY") or os.getenv("HTTP_PROXY")
+)
 
 QDRANT_URL = os.getenv("QDRANT_URL", "http://localhost:6333")
 
@@ -132,17 +137,40 @@ def _ensure_upload_worker() -> None:
             files = job["files"]
 
             for file_path in files:
+                document_name = os.path.splitext(os.path.basename(file_path))[0]
                 try:
                     if not os.path.exists(file_path):
                         print(f"[WARNING] Файл не найден: {file_path}")
+                        qdrant.set_document_status(
+                            session_name,
+                            document_name,
+                            "error",
+                            error_message=f"Файл не найден: {file_path}",
+                        )
                         continue
+
+                    # Update status to processing
+                    qdrant.set_document_status(session_name, document_name, "processing")
+
                     result = process_document(file_path, session_name)
-                    if result["status"] == "exists":
-                        print(f"[WARNING] {result['message']}")
-                    elif result["status"] == "error":
-                        print(f"[WARNING] {result['message']}")
+
+                    if result["status"] == "error":
+                        print(f"[ERROR] {result['message']}")
+                        qdrant.set_document_status(
+                            session_name,
+                            document_name,
+                            "error",
+                            error_message=result["message"],
+                        )
+                    elif result["status"] == "success":
+                        print(f"[SUCCESS] {result['message']}")
+                        # Status already updated in process_document
                 except Exception as exc:
-                    print(f"[WARNING] Ошибка при обработке {file_path}: {exc}")
+                    error_msg = f"Ошибка при обработке {file_path}: {exc}"
+                    print(f"[ERROR] {error_msg}")
+                    qdrant.set_document_status(
+                        session_name, document_name, "error", error_message=str(exc)
+                    )
 
             _UPLOAD_QUEUE.task_done()
 
@@ -152,9 +180,7 @@ def _ensure_upload_worker() -> None:
 def _enqueue_upload(files: List[str], session_name: str) -> str:
     _ensure_upload_worker()
     job_id = str(uuid.uuid4())
-    _UPLOAD_QUEUE.put(
-        {"job_id": job_id, "session_name": session_name, "files": files}
-    )
+    _UPLOAD_QUEUE.put({"job_id": job_id, "session_name": session_name, "files": files})
     return job_id
 
 
@@ -171,9 +197,9 @@ def normalize_medical_term(term: str) -> str:
     term = term.lower().strip()
     # Remove dosage units from names for better deduplication
     # e.g., "ибупрофен 200мг" -> "ибупрофен"
-    term = re.sub(r'\s*\d+\s*(мг|г|мл|таб|капс|мкг|ме|ед)\b', '', term)
+    term = re.sub(r"\s*\d+\s*(мг|г|мл|таб|капс|мкг|ме|ед)\b", "", term)
     # Remove extra whitespace
-    term = re.sub(r'\s+', ' ', term).strip()
+    term = re.sub(r"\s+", " ", term).strip()
     return term
 
 
@@ -233,10 +259,10 @@ ENTITY_PROMPT = ChatPromptTemplate.from_messages(
             "5. Используй точные названия из текста\n\n"
             "Формат ответа - ТОЛЬКО валидный JSON массив:\n"
             "[\n"
-            "  {{\"name\": \"Солитарная плазмоцитома\", \"type\": \"Заболевание\", \"properties\": {{\"код_мкб\": \"C90.2\"}}}},\n"
-            "  {{\"name\": \"лучевая терапия\", \"type\": \"МетодЛечения\", \"properties\": {{\"доза\": \"40-50 Гр\"}}}},\n"
-            "  {{\"name\": \"МРТ\", \"type\": \"ДиагностическийМетод\", \"properties\": {{}}}},\n"
-            "  {{\"name\": \"беременность\", \"type\": \"Противопоказание\", \"properties\": {{}}}}\n"
+            '  {{"name": "Солитарная плазмоцитома", "type": "Заболевание", "properties": {{"код_мкб": "C90.2"}}}},\n'
+            '  {{"name": "лучевая терапия", "type": "МетодЛечения", "properties": {{"доза": "40-50 Гр"}}}},\n'
+            '  {{"name": "МРТ", "type": "ДиагностическийМетод", "properties": {{}}}},\n'
+            '  {{"name": "беременность", "type": "Противопоказание", "properties": {{}}}}\n'
             "]\n\n"
             "Если сущностей нет, верни: []",
         ),
@@ -288,15 +314,15 @@ RELATION_PROMPT = ChatPromptTemplate.from_messages(
             "- имеет_уровень_доказательности / подтвержден_уровнем\n\n"
             "ПРАВИЛА:\n"
             "1. Создавай отношения ТОЛЬКО между сущностями из списка (используй id)\n"
-            "2. Тип отношения = глагольная форма (лечится_методом, а не \"лечение\")\n"
+            '2. Тип отношения = глагольная форма (лечится_методом, а не "лечение")\n'
             "3. Добавляй контекст в properties (дозы, сроки, условия)\n"
             "4. Не дублируй отношения\n\n"
             "Формат - валидный JSON:\n"
             "[\n"
-            "  {{\"source_id\": \"id1\", \"target_id\": \"id2\", \"type\": \"диагностируется_методом\",\n"
-            "   \"properties\": {{\"контекст\": \"для уточнения распространенности\"}}}},\n"
-            "  {{\"source_id\": \"id3\", \"target_id\": \"id4\", \"type\": \"лечится_методом\",\n"
-            "   \"properties\": {{\"доза\": \"40-50 Гр\"}}}}\n"
+            '  {{"source_id": "id1", "target_id": "id2", "type": "диагностируется_методом",\n'
+            '   "properties": {{"контекст": "для уточнения распространенности"}}}},\n'
+            '  {{"source_id": "id3", "target_id": "id4", "type": "лечится_методом",\n'
+            '   "properties": {{"доза": "40-50 Гр"}}}}\n'
             "]\n\n"
             "Если отношений нет: []",
         ),
@@ -320,14 +346,15 @@ QA_PROMPT = ChatPromptTemplate.from_messages(
         ),
         (
             "human",
-            "Вопрос:\n{question}\n\n"
-            "Контекст из документов:\n{results}",
+            "Вопрос:\n{question}\n\n" "Контекст из документов:\n{results}",
         ),
     ]
 )
 
 
-def extract_entities_parallel(chunks: List[str], llm: ChatOpenAI) -> List[List[Dict[str, Any]]]:
+def extract_entities_parallel(
+    chunks: List[str], llm: ChatOpenAI
+) -> List[List[Dict[str, Any]]]:
     chain = ENTITY_PROMPT | llm | StrOutputParser()
     results: List[List[Dict[str, Any]]] = [[] for _ in chunks]
 
@@ -354,7 +381,9 @@ def extract_entities_parallel(chunks: List[str], llm: ChatOpenAI) -> List[List[D
         return clean_entities
 
     with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
-        futures = {executor.submit(_extract, text): idx for idx, text in enumerate(chunks)}
+        futures = {
+            executor.submit(_extract, text): idx for idx, text in enumerate(chunks)
+        }
         for future in as_completed(futures):
             idx = futures[future]
             try:
@@ -381,7 +410,10 @@ def extract_relations_parallel(
             {"id": e["id"], "name": e["name"], "type": e["type"]} for e in entities
         ]
         response = chain.invoke(
-            {"text": text[:MAX_CHUNK_CHARS], "entities": json.dumps(payload, ensure_ascii=False)}
+            {
+                "text": text[:MAX_CHUNK_CHARS],
+                "entities": json.dumps(payload, ensure_ascii=False),
+            }
         )
         parsed = json_repair.loads(strip_code_fences(response))
         if not isinstance(parsed, list):
@@ -433,9 +465,9 @@ def process_document(file_path: str, session_name: str) -> Dict[str, Any]:
 
     # Detect file type and use appropriate loader
     file_extension = os.path.splitext(file_path)[1].lower()
-    if file_extension == '.pdf':
+    if file_extension == ".pdf":
         loader = UnstructuredPDFLoader(file_path)
-    elif file_extension in ['.md', '.markdown']:
+    elif file_extension in [".md", ".markdown"]:
         loader = UnstructuredMarkdownLoader(file_path)
     else:
         return {
@@ -446,7 +478,9 @@ def process_document(file_path: str, session_name: str) -> Dict[str, Any]:
 
     print(f"[DEBUG] Loading {file_extension} file: {file_path}")
     docs = loader.load()
-    print(f"[DEBUG] Loaded {len(docs)} document(s) with total {sum(len(d.page_content) for d in docs)} characters")
+    print(
+        f"[DEBUG] Loaded {len(docs)} document(s) with total {sum(len(d.page_content) for d in docs)} characters"
+    )
 
     splitter = CharacterTextSplitter(chunk_size=CHUNK_SIZE, chunk_overlap=CHUNK_OVERLAP)
     chunks = splitter.split_documents(docs)
@@ -477,7 +511,18 @@ def process_document(file_path: str, session_name: str) -> Dict[str, Any]:
 
     total_entities = sum(len(e) for e in entities_by_chunk)
 
-    print(f"[DEBUG] Stored {len(chunks)} chunks with {total_entities} entities in Qdrant")
+    # Update status to completed
+    qdrant.set_document_status(
+        session_name,
+        document_name,
+        "completed",
+        chunks=len(chunks),
+        entities=total_entities,
+    )
+
+    print(
+        f"[DEBUG] Stored {len(chunks)} chunks with {total_entities} entities in Qdrant"
+    )
 
     return {
         "status": "success",
@@ -498,12 +543,36 @@ def get_documents(session_name: Optional[str]) -> List[List[Any]]:
     docs = qdrant.get_documents(session_name)
     data = []
     for doc in docs:
+        # Format created_at to be more readable
+        created = doc.get("created_at", "")
+        if created:
+            try:
+                from datetime import datetime
+                dt = datetime.fromisoformat(created.replace('Z', '+00:00'))
+                created = dt.strftime("%Y-%m-%d %H:%M")
+            except:
+                created = created[:16] if len(created) > 16 else created
+
+        status = doc.get("status", "unknown")
+        # Add emoji for status
+        status_display = {
+            "queued": "🕒 Queued",
+            "processing": "⏳ Processing",
+            "completed": "✅ Completed",
+            "error": "❌ Error",
+            "unknown": "❓ Unknown",
+        }.get(status, status)
+
+        # Add error message to status if present
+        if status == "error" and doc.get("error_message"):
+            status_display += f" ({doc['error_message'][:50]}...)" if len(doc.get("error_message", "")) > 50 else f" ({doc.get('error_message', '')})"
+
         data.append([
             doc["name"],
-            "",
-            doc["chunks"],
-            doc["entities"],
-            0
+            status_display,
+            created,
+            doc.get("chunks", 0),
+            doc.get("entities", 0),
         ])
     return data
 
@@ -551,10 +620,14 @@ def upload_pdfs(files, session_name: str, progress=gr.Progress()):
         file_path = getattr(file_obj, "name", None) or str(file_obj)
         file_paths.append(file_path)
 
+        # Set initial status as queued for each document
+        document_name = os.path.splitext(os.path.basename(file_path))[0]
+        qdrant.set_document_status(session_name, document_name, "queued")
+
     job_id = _enqueue_upload(file_paths, session_name)
     return (
         f"🕒 Добавлено в очередь: {len(file_paths)} файл(ов). "
-        f"ID задания: {job_id}. Обработка продолжается в фоне.",
+        f"ID задания: {job_id}. Обработка продолжается в фоне. Используйте кнопку 'Обновить' для проверки статуса.",
         get_documents(session_name),
     )
 
@@ -638,10 +711,12 @@ def answer_question(question: str, session_name: str) -> Tuple[str, str]:
     chain = QA_PROMPT | qa_llm | StrOutputParser()
 
     # Format context from chunks
-    context = "\n\n".join([
-        f"[Документ: {r['document_name']}, Chunk {r['chunk_id']}]\n{r['text']}"
-        for r in search_results
-    ])
+    context = "\n\n".join(
+        [
+            f"[Документ: {r['document_name']}, Chunk {r['chunk_id']}]\n{r['text']}"
+            for r in search_results
+        ]
+    )
 
     result_text = f"{context}"
     answer = chain.invoke({"question": question, "results": result_text})
@@ -651,7 +726,12 @@ def answer_question(question: str, session_name: str) -> Tuple[str, str]:
     return answer, graph_html
 
 
-def chat(message: str, history: List[Dict[str, str]], session_name: str, current_graph: str = ""):
+def chat(
+    message: str,
+    history: List[Dict[str, str]],
+    session_name: str,
+    current_graph: str = "",
+):
     if not session_name:
         return history, "", current_graph
     if not message.strip():
@@ -667,6 +747,12 @@ def chat(message: str, history: List[Dict[str, str]], session_name: str, current
 
 
 with gr.Blocks() as demo:
+    # Initialize with existing sessions
+    initial_sessions = get_sessions()
+    initial_session = initial_sessions[0] if initial_sessions else None
+    initial_docs = get_documents(initial_session) if initial_session else []
+    initial_status = f"Текущая сессия: {initial_session}" if initial_session else "Создайте сессию."
+
     with gr.Sidebar():
         gr.Markdown("### Сессии")
         session_name_input = gr.Textbox(
@@ -674,14 +760,23 @@ with gr.Blocks() as demo:
         )
         create_session_btn = gr.Button("Создать сессию")
         session_selector = gr.Dropdown(
-            choices=[],
+            choices=initial_sessions,
+            value=initial_session,
             label="Текущая сессия",
             allow_custom_value=True,
         )
-        session_status = gr.Textbox(label="Статус сессии", interactive=False)
+        session_status = gr.Textbox(
+            label="Статус сессии",
+            value=initial_status,
+            interactive=False
+        )
 
         gr.Markdown("### Загрузка документов")
-        upload_files = gr.File(file_count="multiple", file_types=[".pdf", ".md", ".markdown"], label="PDF и Markdown файлы")
+        upload_files = gr.File(
+            file_count="multiple",
+            file_types=[".pdf", ".md", ".markdown"],
+            label="PDF и Markdown файлы",
+        )
         upload_btn = gr.Button("Загрузить и обработать")
         upload_status = gr.Textbox(label="Статус загрузки", interactive=False)
 
@@ -704,16 +799,18 @@ with gr.Blocks() as demo:
         with gr.Column(scale=1):
             gr.Markdown("### Вопросы по документам")
             chatbot = gr.Chatbot(type="messages", height=400)
-            user_input = gr.Textbox(placeholder="Спросите о документах...", label="Ваш вопрос")
+            user_input = gr.Textbox(
+                placeholder="Спросите о документах...", label="Ваш вопрос"
+            )
             ask_btn = gr.Button("Спросить")
 
             gr.Markdown("### Документы в сессии")
             refresh_docs_btn = gr.Button("Обновить")
             document_table = gr.Dataframe(
-                headers=["Документ", "Создан", "Чанков", "Сущностей", "Связей"],
-                datatype=["str", "str", "number", "number", "number"],
+                headers=["Документ", "Статус", "Создан", "Чанков", "Сущностей"],
+                datatype=["str", "str", "str", "number", "number"],
                 interactive=False,
-                value=[],
+                value=initial_docs,
             )
 
     create_session_btn.click(
@@ -757,15 +854,14 @@ with gr.Blocks() as demo:
         sessions = get_sessions()
         default_session = sessions[0] if sessions else None
         status = (
-            f"Текущая сессия: {default_session}" if default_session else "Создайте сессию."
+            f"Текущая сессия: {default_session}"
+            if default_session
+            else "Создайте сессию."
         )
+        docs = get_documents(default_session) if default_session else []
         return (
-            gr.Dropdown(
-                choices=sessions,
-                value=default_session,
-                allow_custom_value=True,
-            ),
-            get_documents(default_session),
+            gr.update(choices=sessions, value=default_session),
+            docs,
             status,
         )
 
