@@ -251,37 +251,26 @@ def chat(
     message: str,
     history: List[Dict[str, str]],
     selected_collections: List[str],
-    current_graph: str = "",
 ):
     """Handle chat messages."""
     qa_service = get_qa_service()
 
     if not selected_collections:
-        return history, "", current_graph
+        return history, ""
 
     if not message.strip():
-        return history, "", current_graph
+        return history, ""
 
     clean_collections = [strip_legacy_marker(c) for c in selected_collections]
 
     history = history or []
     history.append({"role": "user", "content": message})
 
-    # Get answer quickly
-    answer = qa_service.answer_question_fast(message, clean_collections)
+    # Get answer
+    answer = qa_service.answer_question(message, clean_collections)
     history.append({"role": "assistant", "content": answer})
 
-    # Show answer immediately with loading message for graph
-    loading_graph = (
-        "<div style='padding: 20px; text-align: center; color: #666;'>"
-        "⏳ Генерация графа знаний..."
-        "</div>"
-    )
-    yield history, "", loading_graph
-
-    # Now generate graph
-    graph_html = qa_service.generate_graph_from_question(message, clean_collections)
-    yield history, "", graph_html
+    return history, ""
 
 
 def create_app() -> gr.Blocks:
@@ -341,34 +330,22 @@ def create_app() -> gr.Blocks:
             delete_collection_btn = gr.Button("Удалить коллекцию", variant="stop")
             delete_status = gr.Textbox(label="Статус удаления", interactive=False)
 
-        with gr.Row():
-            with gr.Column(scale=1):
-                gr.Markdown("### Граф знаний")
-                graph_output = gr.HTML(
-                    label="Knowledge Graph",
-                    value=(
-                        "<div style='padding: 20px; text-align: center; color: #666;'>"
-                        "Граф будет отображен после того, как вы зададите вопрос"
-                        "</div>"
-                    ),
-                )
+        with gr.Column():
+            gr.Markdown("### Вопросы по документам")
+            chatbot = gr.Chatbot(type="messages", height=500)
+            user_input = gr.Textbox(
+                placeholder="Спросите о документах...", label="Ваш вопрос"
+            )
+            ask_btn = gr.Button("Спросить")
 
-            with gr.Column(scale=1):
-                gr.Markdown("### Вопросы по документам")
-                chatbot = gr.Chatbot(type="messages", height=400)
-                user_input = gr.Textbox(
-                    placeholder="Спросите о документах...", label="Ваш вопрос"
-                )
-                ask_btn = gr.Button("Спросить")
-
-                gr.Markdown("### Документы в коллекциях")
-                refresh_docs_btn = gr.Button("Обновить")
-                document_table = gr.Dataframe(
-                    headers=["Коллекция", "Документ", "Статус", "Создан", "Чанков", "Сущностей"],
-                    datatype=["str", "str", "str", "str", "number", "number"],
-                    interactive=False,
-                    value=initial_docs,
-                )
+            gr.Markdown("### Документы в коллекциях")
+            refresh_docs_btn = gr.Button("Обновить")
+            document_table = gr.Dataframe(
+                headers=["Коллекция", "Документ", "Статус", "Создан", "Чанков", "Сущностей"],
+                datatype=["str", "str", "str", "str", "number", "number"],
+                interactive=False,
+                value=initial_docs,
+            )
 
         # Event handlers
         create_collection_btn.click(
@@ -411,14 +388,14 @@ def create_app() -> gr.Blocks:
 
         ask_btn.click(
             fn=chat,
-            inputs=[user_input, chatbot, collection_selector, graph_output],
-            outputs=[chatbot, user_input, graph_output],
+            inputs=[user_input, chatbot, collection_selector],
+            outputs=[chatbot, user_input],
         )
 
         user_input.submit(
             fn=chat,
-            inputs=[user_input, chatbot, collection_selector, graph_output],
-            outputs=[chatbot, user_input, graph_output],
+            inputs=[user_input, chatbot, collection_selector],
+            outputs=[chatbot, user_input],
         )
 
         def init_ui():
