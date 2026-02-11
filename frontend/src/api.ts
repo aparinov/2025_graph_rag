@@ -1,4 +1,4 @@
-import type { Collection, Document } from "./types";
+import type { Collection, Document, Source } from "./types";
 
 const BASE = "/api";
 
@@ -47,7 +47,7 @@ export async function uploadFiles(files: FileList, collection: string) {
 }
 
 export function sendChat(question: string, collections: string[]) {
-  return request<{ answer: string }>("/chat", {
+  return request<{ answer: string; sources: Source[] }>("/chat", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ question, collections }),

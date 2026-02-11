@@ -195,5 +195,5 @@ def chat(body: ChatRequest):
 
     qa = get_qa_service()
     clean = [_strip_legacy_marker(c) for c in body.collections]
-    answer = qa.answer_question(body.question, clean)
-    return {"answer": answer}
+    result = qa.answer_question_with_sources(body.question, clean)
+    return {"answer": result["answer"], "sources": result["sources"]}

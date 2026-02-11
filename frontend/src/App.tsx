@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { Moon, Sun } from "lucide-react";
 import type { Collection, ChatMessage, Document } from "./types";
 import * as api from "./api";
 import Sidebar from "./components/Sidebar";
@@ -16,7 +17,13 @@ export default function App() {
   const [docs, setDocs] = useState<Document[]>([]);
   const [loading, setLoading] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
+  const [dark, setDark] = useState(true);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // ── Theme ──
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", dark);
+  }, [dark]);
 
   // ── Load collections on mount ──
   const refreshCollections = useCallback(async () => {
@@ -65,7 +72,6 @@ export default function App() {
     };
   }, [docs, refreshDocs]);
 
-  // ── Toggle collection selection ──
   const toggleCollection = (name: string) => {
     setSelected((prev) => {
       const next = new Set(prev);
@@ -75,19 +81,16 @@ export default function App() {
     });
   };
 
-  // ── Create collection ──
   const handleCreate = async (name: string) => {
     await api.createCollection(name);
     await refreshCollections();
   };
 
-  // ── Upload files ──
   const handleUpload = async (files: FileList, collection: string) => {
     await api.uploadFiles(files, collection);
     await refreshDocs();
   };
 
-  // ── Delete collection ──
   const confirmDelete = async () => {
     if (!deleteTarget) return;
     await api.deleteCollection(deleteTarget);
@@ -101,18 +104,20 @@ export default function App() {
     await refreshDocs();
   };
 
-  // ── Send chat message ──
   const handleSend = async (question: string) => {
     const userMsg: ChatMessage = { role: "user", content: question };
     setMessages((prev) => [...prev, userMsg]);
     setLoading(true);
     try {
-      const { answer } = await api.sendChat(question, [...selected]);
-      setMessages((prev) => [...prev, { role: "assistant", content: answer }]);
+      const { answer, sources } = await api.sendChat(question, [...selected]);
+      setMessages((prev) => [
+        ...prev,
+        { role: "assistant", content: answer, sources },
+      ]);
     } catch (e: any) {
       setMessages((prev) => [
         ...prev,
-        { role: "assistant", content: `Error: ${e.message}` },
+        { role: "assistant", content: `Ошибка: ${e.message}` },
       ]);
     } finally {
       setLoading(false);
@@ -120,14 +125,24 @@ export default function App() {
   };
 
   return (
-    <div className="flex h-screen flex-col bg-gray-950 text-gray-100">
+    <div className="flex h-screen flex-col" style={{ background: "var(--bg-page)", color: "var(--text-primary)" }}>
       {/* Header */}
-      <header className="flex shrink-0 items-center border-b border-gray-800 px-6 py-3">
+      <header
+        className="flex shrink-0 items-center justify-between px-6 py-3"
+        style={{ borderBottom: "1px solid var(--border)" }}
+      >
         <h1 className="text-lg font-semibold tracking-tight">MedGraph RAG</h1>
+        <button
+          onClick={() => setDark((d) => !d)}
+          className="rounded-lg p-2 transition-colors hover:opacity-80"
+          style={{ background: "var(--bg-card)" }}
+          title={dark ? "Светлая тема" : "Тёмная тема"}
+        >
+          {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+        </button>
       </header>
 
       <div className="flex min-h-0 flex-1">
-        {/* Sidebar */}
         <Sidebar
           collections={collections}
           selected={selected}
@@ -137,33 +152,33 @@ export default function App() {
           onDeleteRequest={setDeleteTarget}
         />
 
-        {/* Main content */}
         <main className="flex min-w-0 flex-1 flex-col">
           {/* Tabs */}
-          <div className="flex shrink-0 border-b border-gray-800">
+          <div className="flex shrink-0" style={{ borderBottom: "1px solid var(--border)" }}>
             <button
               className={`px-5 py-2.5 text-sm font-medium transition-colors ${
                 tab === "chat"
-                  ? "border-b-2 border-blue-500 text-blue-400"
-                  : "text-gray-400 hover:text-gray-200"
+                  ? "border-b-2 text-[var(--accent)]"
+                  : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
               }`}
+              style={tab === "chat" ? { borderColor: "var(--accent)" } : undefined}
               onClick={() => setTab("chat")}
             >
-              Chat
+              Чат
             </button>
             <button
               className={`px-5 py-2.5 text-sm font-medium transition-colors ${
                 tab === "docs"
-                  ? "border-b-2 border-blue-500 text-blue-400"
-                  : "text-gray-400 hover:text-gray-200"
+                  ? "border-b-2 text-[var(--accent)]"
+                  : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
               }`}
+              style={tab === "docs" ? { borderColor: "var(--accent)" } : undefined}
               onClick={() => setTab("docs")}
             >
-              Documents
+              Документы
             </button>
           </div>
 
-          {/* Tab content */}
           <div className="min-h-0 flex-1">
             {tab === "chat" ? (
               <Chat
@@ -179,7 +194,6 @@ export default function App() {
         </main>
       </div>
 
-      {/* Delete modal */}
       {deleteTarget && (
         <DeleteConfirmModal
           name={deleteTarget}

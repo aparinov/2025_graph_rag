@@ -14,7 +14,16 @@ export interface Document {
   error_message: string;
 }
 
+export interface Source {
+  collection: string;
+  document: string;
+  chunk_id: number;
+  text: string;
+  score: number;
+}
+
 export interface ChatMessage {
   role: "user" | "assistant";
   content: string;
+  sources?: Source[];
 }

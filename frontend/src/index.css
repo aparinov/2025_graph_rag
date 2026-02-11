@@ -1,6 +1,57 @@
 @import "tailwindcss";
 
-/* Scrollbar styling */
+/* ── Light theme (default) ─────────────────────── */
+:root {
+  --bg-page: #ffffff;
+  --bg-sidebar: #f9fafb;
+  --bg-card: #f3f4f6;
+  --bg-input: #e5e7eb;
+  --bg-user-msg: #2563eb;
+  --bg-assist-msg: #f3f4f6;
+  --bg-modal: #ffffff;
+  --bg-overlay: rgba(0, 0, 0, 0.4);
+  --border: #e5e7eb;
+  --text-primary: #111827;
+  --text-secondary: #6b7280;
+  --text-muted: #9ca3af;
+  --text-on-primary: #ffffff;
+  --accent: #2563eb;
+  --accent-hover: #1d4ed8;
+  --danger: #dc2626;
+  --danger-hover: #b91c1c;
+  --scrollbar-thumb: #d1d5db;
+  --scrollbar-thumb-hover: #9ca3af;
+}
+
+/* ── Dark theme ────────────────────────────────── */
+.dark {
+  --bg-page: #030712;
+  --bg-sidebar: #111827;
+  --bg-card: #1f2937;
+  --bg-input: #1f2937;
+  --bg-user-msg: #2563eb;
+  --bg-assist-msg: #1f2937;
+  --bg-modal: #111827;
+  --bg-overlay: rgba(0, 0, 0, 0.6);
+  --border: #1f2937;
+  --text-primary: #f3f4f6;
+  --text-secondary: #9ca3af;
+  --text-muted: #6b7280;
+  --text-on-primary: #ffffff;
+  --accent: #3b82f6;
+  --accent-hover: #2563eb;
+  --danger: #dc2626;
+  --danger-hover: #ef4444;
+  --scrollbar-thumb: #374151;
+  --scrollbar-thumb-hover: #4b5563;
+}
+
+body {
+  background: var(--bg-page);
+  color: var(--text-primary);
+}
+
+/* Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -9,9 +60,9 @@
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #374151;
+  background: var(--scrollbar-thumb);
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #4b5563;
+  background: var(--scrollbar-thumb-hover);
 }
