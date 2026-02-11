@@ -16,3 +16,7 @@ docs
 
 .gradio
 qdrant_storage
+
+# Frontend
+frontend/node_modules
+frontend/dist

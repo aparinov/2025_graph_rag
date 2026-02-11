@@ -2,7 +2,9 @@ langchain-community
 langchain-text-splitters
 langchain-experimental
 langchain-openai
-gradio
+fastapi
+uvicorn[standard]
+python-multipart
 python-dotenv
 unstructured[pdf]
 poppler-utils

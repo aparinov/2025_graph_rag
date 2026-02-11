@@ -12,7 +12,7 @@ services:
       - gr_network
 
   app:
-    container_name: gradio
+    container_name: medgraph-rag
     build:
       context: .
       dockerfile: Dockerfile
@@ -23,7 +23,7 @@ services:
     environment:
       - PYTHONUNBUFFERED=1
     ports:
-      - "7860:7860"
+      - "8000:8000"
     networks:
       - gr_network
 

@@ -1,16 +1,18 @@
-# Use a Python image with uv pre-installed
+# ── Stage 1: Build frontend ─────────────────────────────────────────────
+FROM node:22-slim AS frontend
+WORKDIR /frontend
+COPY frontend/package.json frontend/package-lock.json* ./
+RUN npm install
+COPY frontend/ ./
+RUN npm run build
+
+# ── Stage 2: Python application ────────────────────────────────────────
 FROM ghcr.io/astral-sh/uv:python3.12-bookworm-slim
 
-# Install the project into `/app`
 WORKDIR /app
 
-# Enable bytecode compilation
 ENV UV_COMPILE_BYTECODE=1
-
-# Copy from the cache instead of linking since it's a mounted volume
 ENV UV_LINK_MODE=copy
-
-ENV GRADIO_SERVER_NAME="0.0.0.0"
 
 RUN apt-get update \
   && apt-get install -y --no-install-recommends \
@@ -19,7 +21,6 @@ RUN apt-get update \
 
 COPY pyproject.toml uv.lock ./
 
-# Install the project's dependencies using the lockfile and settings
 RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=bind,source=uv.lock,target=uv.lock \
     --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
@@ -27,14 +28,12 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 
 COPY . /app
 
-# Place executables in the environment at the front of the path
+# Copy built frontend from stage 1
+COPY --from=frontend /frontend/dist /app/frontend/dist
+
 ENV PATH="/app/.venv/bin:$PATH"
 
-# Reset the entrypoint, don't invoke `uv`
 ENTRYPOINT []
-EXPOSE 7860
+EXPOSE 8000
 
-# Run the FastAPI application by default
-# Uses `fastapi dev` to enable hot-reloading when the `watch` sync occurs
-# Uses `--host 0.0.0.0` to allow access from outside the container
 CMD ["python3", "main.py"]
