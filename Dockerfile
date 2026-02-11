@@ -34,6 +34,6 @@ COPY --from=frontend /frontend/dist /app/frontend/dist
 ENV PATH="/app/.venv/bin:$PATH"
 
 ENTRYPOINT []
-EXPOSE 8000
+EXPOSE 7860
 
 CMD ["python3", "main.py"]
