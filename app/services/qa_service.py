@@ -119,12 +119,19 @@ class QAService:
             doc_key = (r["collection_name"], r["document_name"])
             if doc_key not in seen_docs:
                 seen_docs.add(doc_key)
+                file_name = r.get("file_name", "")
+                file_url = (
+                    f"/api/files/{r['collection_name']}/{file_name}"
+                    if file_name
+                    else ""
+                )
                 sources.append({
                     "collection": r["collection_name"],
                     "document": r["document_name"],
                     "chunk_id": r["chunk_id"],
                     "text": r["text"][:300],
                     "score": round(r["score"], 3),
+                    "file_url": file_url,
                 })
 
         return {"answer": answer, "sources": sources}

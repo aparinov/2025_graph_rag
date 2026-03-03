@@ -167,6 +167,7 @@ class QdrantManager:
         document_name: str,
         entities_by_chunk: List[List[Dict]],
         collection_name: Optional[str] = None,
+        file_name: Optional[str] = None,
     ):
         """Store chunks with embeddings and metadata
 
@@ -176,6 +177,7 @@ class QdrantManager:
             document_name: Name of the document
             entities_by_chunk: Entities extracted from each chunk
             collection_name: Target collection (None = use legacy medical_documents)
+            file_name: Original filename with extension (for download links)
         """
         # Determine target collection
         target_collection = collection_name or self.collection_name
@@ -198,6 +200,9 @@ class QdrantManager:
                 ],
                 "entity_count": len(entities),
             }
+
+            if file_name:
+                payload["file_name"] = file_name
 
             # Add session_name for legacy collections
             if target_collection == self.collection_name:
@@ -316,6 +321,7 @@ class QdrantManager:
                     "chunk_id": hit.payload["chunk_id"],
                     "entities": hit.payload.get("entities", []),
                     "score": hit.score,
+                    "file_name": hit.payload.get("file_name", ""),
                 })
 
         # Sort all results by score and return top k

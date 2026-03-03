@@ -6,12 +6,14 @@ import re
 import shutil
 import tempfile
 from datetime import datetime
+from pathlib import Path
 from typing import List, Optional
 
 from fastapi import APIRouter, UploadFile, File, Form, HTTPException
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 
-from app.config import COLLECTION_NAME_PATTERN
+from app.config import COLLECTION_NAME_PATTERN, UPLOAD_DIR
 from app.dependencies import get_qdrant_manager, get_document_service, get_qa_service
 
 router = APIRouter(prefix="/api")
@@ -160,14 +162,17 @@ async def upload_files(
     clean = _strip_legacy_marker(collection)
     collection_type = qdrant.get_collection_type(clean)
 
+    # Save files to persistent uploads directory
+    collection_dir = Path(UPLOAD_DIR) / clean
+    collection_dir.mkdir(parents=True, exist_ok=True)
+
     saved_paths: List[str] = []
-    tmp_dir = tempfile.mkdtemp()
 
     for f in files:
-        dest = os.path.join(tmp_dir, f.filename)
+        dest = collection_dir / f.filename
         with open(dest, "wb") as buf:
             shutil.copyfileobj(f.file, buf)
-        saved_paths.append(dest)
+        saved_paths.append(str(dest))
 
         document_name = os.path.splitext(f.filename)[0]
         if collection_type == "legacy":
@@ -181,6 +186,18 @@ async def upload_files(
         job_id = doc_service.enqueue_upload(saved_paths, collection_name=clean)
 
     return {"status": "ok", "job_id": job_id, "file_count": len(saved_paths)}
+
+
+# ── File serving ──────────────────────────────────────────────────────
+
+
+@router.get("/files/{collection}/{filename:path}")
+def serve_file(collection: str, filename: str):
+    """Serve an uploaded file for viewing/download."""
+    file_path = Path(UPLOAD_DIR) / collection / filename
+    if not file_path.is_file():
+        raise HTTPException(404, "File not found.")
+    return FileResponse(file_path, filename=filename)
 
 
 # ── Chat ───────────────────────────────────────────────────────────────

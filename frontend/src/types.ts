@@ -20,6 +20,7 @@ export interface Source {
   chunk_id: number;
   text: string;
   score: number;
+  file_url?: string;
 }
 
 export interface ChatMessage {

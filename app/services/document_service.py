@@ -99,12 +99,14 @@ class DocumentService:
             entities_by_chunk.append(prepared_chunk)
 
         # Store in Qdrant
+        file_name = os.path.basename(file_path)
         self.qdrant.add_chunks(
             chunk_texts,
             session_name or "default",
             document_name,
             entities_by_chunk,
             collection_name=collection_name,
+            file_name=file_name,
         )
 
         total_entities = sum(len(e) for e in entities_by_chunk)

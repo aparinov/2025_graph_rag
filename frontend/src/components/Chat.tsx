@@ -53,7 +53,19 @@ function SourcesCitation({ sources }: { sources: Source[] }) {
             >
               <div className="mb-1 flex items-center gap-2 font-medium" style={{ color: "var(--text-primary)" }}>
                 <FileText className="h-3 w-3 shrink-0" style={{ color: "var(--accent)" }} />
-                {s.document}
+                {s.file_url ? (
+                  <a
+                    href={s.file_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline hover:opacity-80"
+                    style={{ color: "var(--accent)" }}
+                  >
+                    {s.document}
+                  </a>
+                ) : (
+                  s.document
+                )}
                 <span className="ml-auto font-normal" style={{ color: "var(--text-muted)" }}>
                   {s.collection} &middot; {(s.score * 100).toFixed(0)}%
                 </span>

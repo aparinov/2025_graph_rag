@@ -44,3 +44,6 @@ SSL_CERT_FILE = os.getenv("SSL_CERT_FILE") or True
 # Collection Configuration
 DEFAULT_COLLECTION = "medical_documents"  # Legacy collection for backward compatibility
 COLLECTION_NAME_PATTERN = r"^[a-z0-9_]{3,50}$"  # Collection name validation pattern
+
+# Upload storage
+UPLOAD_DIR = os.getenv("UPLOAD_DIR", os.path.join(os.path.dirname(os.path.dirname(__file__)), "uploads"))
