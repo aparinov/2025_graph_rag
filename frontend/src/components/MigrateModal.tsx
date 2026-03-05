@@ -82,7 +82,7 @@ export default function MigrateModal({ collections, onClose }: Props) {
             ref={fileRef}
             type="file"
             multiple
-            accept=".pdf,.md,.markdown"
+            accept=".pdf,.doc,.docx,.html,.htm,.md,.markdown"
             className="w-full text-xs file:mr-2 file:rounded file:border-0 file:px-2 file:py-1 file:text-xs"
             style={{ color: "var(--text-secondary)" }}
           />
