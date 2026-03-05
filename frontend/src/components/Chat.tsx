@@ -55,7 +55,7 @@ function SourcesCitation({ sources }: { sources: Source[] }) {
                 <FileText className="h-3 w-3 shrink-0" style={{ color: "var(--accent)" }} />
                 {s.file_url ? (
                   <a
-                    href={s.file_url}
+                    href={`/viewer.html?url=${encodeURIComponent(s.file_url)}&name=${encodeURIComponent(s.document)}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="underline hover:opacity-80"
