@@ -200,6 +200,50 @@ def serve_file(collection: str, filename: str):
     return FileResponse(file_path, filename=filename)
 
 
+# ── Migration ──────────────────────────────────────────────────────
+
+
+@router.post("/migrate-files")
+async def migrate_files(
+    files: List[UploadFile] = File(...),
+    collection: str = Form(...),
+):
+    """Update file_name metadata in Qdrant for existing documents without re-indexing."""
+    qdrant = get_qdrant_manager()
+    clean = _strip_legacy_marker(collection)
+
+    # Save files and build mappings
+    collection_dir = Path(UPLOAD_DIR) / clean
+    collection_dir.mkdir(parents=True, exist_ok=True)
+
+    file_mappings: dict[str, str] = {}  # document_name -> file_name
+    saved_files: dict[str, Path] = {}   # document_name -> file path on disk
+
+    for f in files:
+        document_name = os.path.splitext(f.filename)[0]
+        dest = collection_dir / f.filename
+        with open(dest, "wb") as buf:
+            shutil.copyfileobj(f.file, buf)
+        file_mappings[document_name] = f.filename
+        saved_files[document_name] = dest
+
+    # Update file_name in Qdrant payloads
+    matched = qdrant.migrate_file_names(clean, file_mappings)
+    matched_set = set(matched)
+
+    # Delete files that had no matching documents
+    unmatched_deleted = []
+    for doc_name, path in saved_files.items():
+        if doc_name not in matched_set:
+            path.unlink(missing_ok=True)
+            unmatched_deleted.append(file_mappings[doc_name])
+
+    return {
+        "matched": [file_mappings[m] for m in matched],
+        "unmatched_deleted": unmatched_deleted,
+    }
+
+
 # ── Chat ───────────────────────────────────────────────────────────────
 
 

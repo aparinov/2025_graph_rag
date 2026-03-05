@@ -46,6 +46,17 @@ export async function uploadFiles(files: FileList, collection: string) {
   );
 }
 
+export function migrateFiles(files: FileList, collection: string) {
+  const form = new FormData();
+  for (const f of files) form.append("files", f);
+  form.append("collection", collection);
+
+  return request<{ matched: string[]; unmatched_deleted: string[] }>(
+    "/migrate-files",
+    { method: "POST", body: form },
+  );
+}
+
 export function sendChat(question: string, collections: string[]) {
   return request<{ answer: string; sources: Source[] }>("/chat", {
     method: "POST",

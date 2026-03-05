@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { Plus, Upload, Trash2, ChevronDown } from "lucide-react";
+import { Plus, Upload, Trash2, ChevronDown, RefreshCw } from "lucide-react";
 import type { Collection } from "../types";
 
 interface Props {
@@ -9,6 +9,7 @@ interface Props {
   onCreate: (name: string) => Promise<void>;
   onUpload: (files: FileList, collection: string) => Promise<void>;
   onDeleteRequest: (name: string) => void;
+  onMigrateRequest: () => void;
 }
 
 export default function Sidebar({
@@ -18,6 +19,7 @@ export default function Sidebar({
   onCreate,
   onUpload,
   onDeleteRequest,
+  onMigrateRequest,
 }: Props) {
   const [newName, setNewName] = useState("");
   const [creating, setCreating] = useState(false);
@@ -195,6 +197,20 @@ export default function Sidebar({
                   Нет коллекций для удаления.
                 </p>
               )}
+            </div>
+
+            {/* Migrate */}
+            <div>
+              <div className="mb-1 flex items-center gap-1 text-xs" style={{ color: "var(--text-secondary)" }}>
+                <RefreshCw className="h-3 w-3" /> Миграция файлов
+              </div>
+              <button
+                onClick={onMigrateRequest}
+                className="w-full rounded px-2 py-1 text-xs font-medium text-white"
+                style={{ background: "var(--accent)" }}
+              >
+                Открыть миграцию
+              </button>
             </div>
           </div>
         </details>

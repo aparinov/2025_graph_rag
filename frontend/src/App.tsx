@@ -6,17 +6,19 @@ import Sidebar from "./components/Sidebar";
 import Chat from "./components/Chat";
 import DocumentsPanel from "./components/DocumentsPanel";
 import DeleteConfirmModal from "./components/DeleteConfirmModal";
+import MigrateModal from "./components/MigrateModal";
 
 type Tab = "chat" | "docs";
 
 export default function App() {
   const [collections, setCollections] = useState<Collection[]>([]);
-  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [selected, setSelected] = useState<Set<string>>(new Set(["Minzdrav", "nccn"]));
   const [tab, setTab] = useState<Tab>("chat");
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [docs, setDocs] = useState<Document[]>([]);
   const [loading, setLoading] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
+  const [showMigrate, setShowMigrate] = useState(false);
   const [dark, setDark] = useState(true);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -150,6 +152,7 @@ export default function App() {
           onCreate={handleCreate}
           onUpload={handleUpload}
           onDeleteRequest={setDeleteTarget}
+          onMigrateRequest={() => setShowMigrate(true)}
         />
 
         <main className="flex min-w-0 flex-1 flex-col">
@@ -199,6 +202,13 @@ export default function App() {
           name={deleteTarget}
           onConfirm={confirmDelete}
           onCancel={() => setDeleteTarget(null)}
+        />
+      )}
+
+      {showMigrate && (
+        <MigrateModal
+          collections={collections}
+          onClose={() => setShowMigrate(false)}
         />
       )}
     </div>

@@ -557,6 +557,70 @@ class QdrantManager:
 
         self.client.upsert(collection_name=self.metadata_collection, points=[point])
 
+    def migrate_file_names(
+        self, collection_name: str, file_mappings: Dict[str, str]
+    ) -> List[str]:
+        """Update file_name payload for existing documents without re-indexing.
+
+        Args:
+            collection_name: Collection or legacy session name
+            file_mappings: dict of {document_name: file_name}
+
+        Returns:
+            List of document_names that were matched and updated
+        """
+        collection_type = self.get_collection_type(collection_name)
+
+        if collection_type == "legacy":
+            target_collection = self.collection_name
+            filter_key = "session_name"
+        else:
+            target_collection = collection_name
+            filter_key = "collection_name"
+
+        matched = []
+
+        for document_name, file_name in file_mappings.items():
+            # Build filter to find all chunks of this document
+            must_conditions = [
+                FieldCondition(
+                    key="document_name", match=MatchValue(value=document_name)
+                )
+            ]
+            if collection_type == "legacy":
+                must_conditions.append(
+                    FieldCondition(
+                        key=filter_key, match=MatchValue(value=collection_name)
+                    )
+                )
+
+            # Scroll to collect all matching point IDs
+            point_ids = []
+            offset = None
+            while True:
+                results, next_offset = self.client.scroll(
+                    collection_name=target_collection,
+                    limit=100,
+                    offset=offset,
+                    scroll_filter=Filter(must=must_conditions),
+                    with_payload=False,
+                    with_vectors=False,
+                )
+                point_ids.extend([p.id for p in results])
+                if next_offset is None:
+                    break
+                offset = next_offset
+
+            if point_ids:
+                self.client.set_payload(
+                    collection_name=target_collection,
+                    payload={"file_name": file_name},
+                    points=point_ids,
+                )
+                matched.append(document_name)
+
+        return matched
+
     def get_document_metadata(
         self,
         document_name: str,
